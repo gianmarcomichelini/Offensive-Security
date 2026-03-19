@@ -1,7 +1,7 @@
 # Binary Exploitation
 
 Challenges organized by the mitigation layer being bypassed or technique being applied.
-Each folder contains the binary, a `solve.py`, and a `writeup.md` per challenge.
+Each folder contains the binary, a `solve.py`, and a `README.md` per challenge.
 
 ---
 
