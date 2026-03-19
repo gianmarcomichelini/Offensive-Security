@@ -20,16 +20,16 @@ Each folder contains the binary, a `solve.py`, and a `README.md` per challenge.
 
 ### stack-basics/
 
-| challenge | type |
-|---|---|
-| [guestbook](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/binary/stack-basics/guestbook) | ret2win |
-| [whispering-wall](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/binary/stack-basics/whispering-wall) | ret2win |
-| [escape-room](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/binary/stack-basics/escape-room) | ret2win + ROP args (pop rdi / pop rsi) |
-| [lemonade-stand](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/binary/stack-basics/lemonade-stand) | variable overwrite |
-| [cosmic-burger](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/binary/stack-basics/cosmic-burger) | two adjacent variable overwrites |
-| [mini-game](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/binary/stack-basics/mini-game) | function pointer overwrite |
-| [canary-callback](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/binary/stack-basics/canary-callback) | function pointer overwrite |
-| [cafe-menu](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/binary/stack-basics/cafe-menu) | off-by-one index corruption |
+| challenge                                                                                                                   | type |
+|-----------------------------------------------------------------------------------------------------------------------------|---|
+| [guestbook](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/binary/stack-basics/guestbook)               | ret2win |
+| [whispering-wall](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/binary/stack-basics/whispering-wall)   | ret2win |
+| [escape-room](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/binary/stack-basics/escape-room)           | ret2win + ROP args (pop rdi / pop rsi) |
+| [lemonade-stand](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/binary/stack-basics/lemonade-stand)     | variable overwrite |
+| [cosmic-burger](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/binary/stack-basics/cosmic-burger)       | two adjacent variable overwrites |
+| [mini-game](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/binary/stack-basics/mini-game)               | function pointer overwrite |
+| [enchanted-forest](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/binary/stack-basics/enchanted-forest) | function pointer overwrite |
+| [cafe-menu](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/binary/stack-basics/cafe-menu)               | off-by-one index corruption |
 
 ### bof-canaries/
 
