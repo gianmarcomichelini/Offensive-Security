@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 from pwn import *
 
-exe = ELF("./canary_callback", checksec=False)
+exe = ELF("./enchanted_forest", checksec=False)
 context.binary = exe
 context.arch   = 'amd64'
 context.os     = 'linux'
