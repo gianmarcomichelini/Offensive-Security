@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 from pwn import *
 
-exe = ELF("./whispering_wall", checksec=False)
+exe = ELF("./parrot_cage", checksec=False)
 context.binary = exe
 context.arch   = 'amd64'
 context.os     = 'linux'
