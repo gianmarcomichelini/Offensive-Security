@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 from pwn import *
 
-exe = ELF('secret_library', checksec=False)
+exe = ELF('./secret_library')
 context.binary = exe
-context.os = 'linux'
-context.arch = 'amd64'
+context.arch   = 'amd64'
+context.os     = 'linux'
 
-HOST, PORT = 'offsec.m0lecon.it', 13530
+HOSTNAME = 'HOSTNAME_PLACEHOLDER'
+PORT     = 0  # PORT_PLACEHOLDER
 
 CANARY_IDX = 23
 
@@ -20,7 +21,7 @@ def conn():
     if args.LOCAL:
         r = process(exe.path)
     else:
-        r = remote(HOST, PORT)
+        r = remote(HOSTNAME, PORT)
     return r
 
 
