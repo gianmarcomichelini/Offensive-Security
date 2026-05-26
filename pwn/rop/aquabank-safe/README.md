@@ -4,9 +4,9 @@ We now advance our academic inquiry toward the laboratory exercise designated as
 
 Having successfully mapped the execution environment, the attacker utilizes the `deposit` function to inject a complete Return Oriented Programming chain directly into the globally accessible `vault` structure at a predefined offset, where this specific execution chain is meticulously designed to align the stack, load the address of the command shell string into the primary argument register, and ultimately invoke the system library function. The final and most critical phase of the assessment focuses on the `open_safe` function, where the developer allocated a diminutive local character array of exactly eight bytes but subsequently invoked the `read` function to accept up to twenty four bytes of user input, which introduces a highly constrained **Buffer Overflow** condition that provides just enough space to overwrite the saved base pointer and the saved instruction pointer, but lacks the necessary volume to host a full execution chain. To overcome this spatial limitation, the exploit leverages an advanced technique known as **Stack Pivoting**, where the attacker overwrites the saved base pointer with the dynamically calculated address of the previously populated `vault` array and replaces the instruction pointer with a specific assembly gadget composed of a `leave` instruction followed by a `ret` instruction. When the vulnerable function concludes and executes its standard epilogue, the injected gadget forces the processor to abandon the current execution stack and pivot its internal registers to the forged stack located within the global data segment, which seamlessly redirects the program flow into the waiting execution chain and ultimately grants interactive administrative control over the compromised process.
 
-C
 
-```
+
+```C
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
