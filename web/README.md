@@ -1,89 +1,97 @@
-# Web Exploitation — CTF Writeups
+# Web Exploitation CTF Writeups
 
-A collection of web security challenge writeups organized by vulnerability category, each documented with methodology, exploitation steps and key takeaways.
-
+A collection of web security challenge writeups organized by vulnerability category, each documented with methodology, exploitation steps, and key takeaways.
 
 ## Challenges by Category
 
-### IDOR — Insecure Direct Object Reference
+### business-logic
 
-Vulnerabilities where the server fails to verify that the authenticated user is authorized to access the requested resource, allowing enumeration of other users' data by manipulating identifiers.
+| challenge | documentation |
+|---|---|
+| [swagshop](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/business-logic/swagshop.md) | workflow sequence circumvention |
 
-| Challenge | Difficulty | Platform | Writeup |
-|-----------|------------|----------|---------|
-| MedLab | Beginner | OliCyber | [idor/med-lab.md](./idor/med-lab.md) |
-| EasyNotes | Beginner | OliCyber | [idor/easy-notes.md](./idor/easy-notes.md) |
-| Make a Wish | Intermediate | OliCyber | [idor/make-a-wish.md](./idor/make-a-wish.md) |
+### cookie-manipulation
 
-Any client-accessible identifier, whether it appears in REST API paths, query strings, or JSON bodies, is a potential IDOR vector if the server does not enforce per-request authorization checks. See [idor/easy-notes.md](./idor/easy-notes.md) for a deeper breakdown of how API-level IDOR differs from the more visible URL-parameter variant.
+| challenge | documentation |
+|---|---|
+| [click-me](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/cookie-manipulation/click-me.md) | cookie value tampering |
 
----
+### idor
 
-### Cookie Manipulation
+| challenge | documentation |
+|---|---|
+| [easynotes](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/idor/easynotes.md) | baseline sequential parameter reference access |
+| [labresults](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/idor/labresults.md) | identifier validation bypass |
+| [make-a-wish](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/idor/make-a-wish.md) | high privileged object modifications via APIs |
+| [ticketvault](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/idor/ticketvault.md) | structured reference extraction |
 
-Vulnerabilities arising from storing security-sensitive state, such as scores, balances or roles, in client-side cookies, which are fully readable and writable by the user.
+### input-validation
 
-| Challenge | Difficulty | Platform | Writeup |
-|-----------|------------|----------|---------|
-| Click Me | Beginner | OliCyber | [cookie-manipulation/click-me.md](./cookie-manipulation/click-me.md) |
+| challenge | documentation |
+|---|---|
+| [flags-shop](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/input-validation/flags-shop.md) | payload structure filter omissions |
 
-Cookies are entirely client-controlled, so any sensitive value stored in them can be freely modified by the attacker, and server-side session state is the only reliable mechanism for tracking security-sensitive values like scores or balances.
+### privilege-escalation
 
----
+| challenge | documentation |
+|---|---|
+| [al-dente](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/privilege-escalation/al-dente.md) | roles validation processing failure |
+| [mission-control](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/privilege-escalation/mission-control.md) | broken access control |
 
-### Input Validation
+### token-manipulation
 
-Vulnerabilities where the server trusts client-supplied values, such as hidden form fields or prices, without independently verifying them server-side.
+| challenge | documentation |
+|---|---|
+| [password-changer](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/token-manipulation/password-changer.md) | base64 encoded token manipulation |
 
-| Challenge | Difficulty | Platform | Writeup |
-|-----------|------------|----------|---------|
-| Flags Shop | Beginner | OliCyber | [input-validation/flags-shop.md](./input-validation/flags-shop.md) |
+### session-management
 
-The server should never accept security-critical values like prices from the client, since only identifiers such as an item ID should come from the client, while everything else must be looked up server-side from a trusted data source.
+| challenge | documentation |
+|---|---|
+| [a-too-small-reminder](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/session-management/a-too-small-reminder.md) | session ID brute forcing |
+| [bibvault-1](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/session-management/bibvault-1.md) | JWT signature omission |
+| [cookie-monster-army](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/session-management/cookie-monster-army.md) | predictability verification analysis |
+| [flagmail](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/session-management/flagmail.md) | IDOR combined with predictable tokens |
+| [jwt-bypass-flawed-signature](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/session-management/jwt-bypass-flawed-signature.md) | improper verification implementation |
+| [jwt-bypass-weak-keys](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/session-management/jwt-bypass-weak-keys.md) | symmetric signature brute forcing |
+| [jwt-bypass-jku](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/session-management/jwt-bypass-jku.md) | JKU header injection |
+| [jwt-bypass-jwk](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/session-management/jwt-bypass-jwk.md) | JWK header injection |
+| [jwt-bypass-kid](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/session-management/jwt-bypass-kid.md) | KID header path traversal |
+| [keyvault](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/session-management/keyvault.md) | JKU injection |
+| [neonarcade](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/session-management/neonarcade.md) | privilege escalation with mass assignment |
+| [power-cookie](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/session-management/power-cookie.md) | authorization manipulation |
+| [two-factor-flaws](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/session-management/two-factor-flaws.md) | architecture and logic flaws |
 
----
+### sqli
 
-### Token Manipulation
+| challenge | documentation |
+|---|---|
+| [airlinelostfound](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/sqli/airlinelostfound.md) | extraction and parenthesis escaping |
+| [basic-sqli](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/sqli/basic-sqli.md) | authentication bypass structures |
+| [blind-sqli-automation](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/sqli/blind-sqli-automation.md) | boolean oracle construction |
+| [bookbrew](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/sqli/bookbrew.md) | injection via session cookie |
+| [departmentwiki](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/sqli/departmentwiki.md) | stacked queries |
+| [logic-sqli](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/sqli/logic-sqli.md) | logic evaluation |
+| [sqli-registration](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/sqli/sqli-registration.md) | exploiting registration flows |
+| [sqlilite-login-bypass](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/sqli/sqlilite-login-bypass.md) | SQLite authentication subversion |
+| [sn4ck-sh3nan1gans](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/sqli/sn4ck-sh3nan1gans.md) | encoded JSON payloads |
+| [stagepass](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/sqli/stagepass.md) | numeric input with WAF bypass |
+| [time-based-sqli](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/sqli/time-based-sqli.md) | time delay dynamics |
+| [todo-cookie-bypass](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/sqli/todo-cookie-bypass.md) | cookie bypass vectors |
+| [union-based-sqli](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/sqli/union-based-sqli.md) | explicit UNION constructs |
 
-Vulnerabilities where tokens encoding user identity or permissions are protected only by encoding, such as Base64, rather than by cryptographic signing, allowing an attacker to forge arbitrary tokens.
+### code-injection
 
-| Challenge | Difficulty | Platform | Writeup |
-|-----------|------------|----------|---------|
-| Password Changer 3000 | Intermediate | OliCyber | [token-manipulation/password-changer-3000.md](./token-manipulation/password-changer-3000.md) |
-
-Base64 is encoding, not encryption, so tokens must be cryptographically signed, for example with HMAC or a properly configured JWT, in order for tampering to be detectable server-side.
-
----
-
-### Privilege Escalation / Mass Assignment
-
-Vulnerabilities where the server accepts user-supplied parameters that map directly to internal object attributes, allowing an attacker to set fields like `role` that should never be user-controlled.
-
-| Challenge | Difficulty | Platform | Writeup |
-|-----------|------------|----------|---------|
-| Al Dente | Intermediate | OliCyber | [privilege-escalation/al-dente.md](./privilege-escalation/al-dente.md) |
-
-API endpoints that accept JSON or form data must explicitly whitelist the fields they allow users to set, since blindly binding all request parameters to internal models enables mass assignment attacks that can silently elevate privileges.
-
----
-
-
-## Tools Used
-
-| Tool | Purpose |
-|------|---------|
-| [Burp Suite](https://portswigger.net/burp) | Intercepting proxy, Repeater, HTTP history |
-| [CyberChef](https://gchq.github.io/CyberChef/) | Encoding/decoding (Base64, hex, etc.) |
-| Browser DevTools | Cookie inspection, network tab, source analysis |
-
----
-
-## Key Principles
-
-Every value originating from the client, whether a form field, a cookie, a header or a URL parameter, is entirely attacker-controlled, and a server that makes decisions based on these values without independently verifying them is, by definition, vulnerable. Hidden form fields, obfuscated parameters and encoded tokens are all readable and modifiable by anyone who inspects the traffic, so the distinction between hidden and secret must never be confused. Encoding schemes like Base64 or URL encoding are reversible by anyone and provide no integrity guarantees whatsoever, which is why cryptographic signatures are required wherever tamper-evidence matters. Authorization must be enforced per-request, since checking identity at login is never sufficient, and every sensitive operation must independently verify that the requester has permission for that specific resource. Finally, a skilled attacker considers all available attack vectors, from Burp Repeater to DevTools console to direct URL manipulation, and chooses the most reliable path for the specific context.
-
----
-
-## Disclaimer
-
-All challenges documented in this repository were solved on dedicated CTF and training platforms in a legal and ethical context, and this material is intended exclusively for educational purposes. These techniques must never be applied to systems that you do not own or for which you do not have explicit written permission to test.
+| challenge | documentation |
+|---|---|
+| [3v-l](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/code-injection/3v-l.md) | advanced Python sandboxes |
+| [autograder](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/code-injection/autograder.md) | Python sandbox evasion and hierarchy traversal |
+| [calcolatrice](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/code-injection/calcolatrice.md) | PHP evaluation |
+| [gitpeek](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/code-injection/gitpeek.md) | vulnerable variable expansion |
+| [ping1](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/code-injection/ping1.md) | unrestricted command execution |
+| [ping2](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/code-injection/ping2.md) | advanced filter evasion |
+| [portswigger](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/code-injection/portswigger.md) | blind OS command injection |
+| [qrdrop](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/code-injection/qrdrop.md) | standard command injection |
+| [spreadsheetzero](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/code-injection/spreadsheetzero.md) | formula evaluation |
+| [timp](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/code-injection/timp.md) | filter bypass |
+| [virus-vault](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/code-injection/virus-vault.md) | blind CMD injection |
