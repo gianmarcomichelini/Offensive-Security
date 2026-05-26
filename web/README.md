@@ -11,6 +11,7 @@ A collection of web security challenge writeups organized by vulnerability categ
 | [click-me](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/application-logic/click-me.md) | cookie manipulation | cookie value tampering |
 | [password-changer](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/application-logic/password-changer.md) | token manipulation | base64 encoded token manipulation |
 | [swagshop](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/application-logic/swagshop.md) | business logic | workflow sequence circumvention |
+| [flags-shop](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/input-validation/flags-shop.md) | input validation | payload structure filter omissions |
 
 ### idor
 
@@ -21,11 +22,6 @@ A collection of web security challenge writeups organized by vulnerability categ
 | [make-a-wish](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/idor/make-a-wish.md) | high privileged object modifications via APIs |
 | [ticketvault](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/idor/ticketvault.md) | structured reference extraction |
 
-### input-validation
-
-| challenge | documentation |
-|---|---|
-| [flags-shop](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/input-validation/flags-shop.md) | payload structure filter omissions |
 
 ### privilege-escalation
 
@@ -74,13 +70,13 @@ A collection of web security challenge writeups organized by vulnerability categ
 
 | challenge | documentation |
 |---|---|
-| [3v-l](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/code-injection/3v-l.md) | advanced Python sandboxes |
+| [3val](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/code-injection/3val.md) | advanced Python sandboxes |
 | [autograder](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/code-injection/autograder.md) | Python sandbox evasion and hierarchy traversal |
 | [calcolatrice](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/code-injection/calcolatrice.md) | PHP evaluation |
 | [gitpeek](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/code-injection/gitpeek.md) | vulnerable variable expansion |
 | [ping1](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/code-injection/ping1.md) | unrestricted command execution |
 | [ping2](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/code-injection/ping2.md) | advanced filter evasion |
-| [portswigger](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/code-injection/portswigger.md) | blind OS command injection |
+| [blind-injection](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/code-injection/blind-injection.md) | blind OS command injection |
 | [qrdrop](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/code-injection/qrdrop.md) | standard command injection |
 | [spreadsheetzero](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/code-injection/spreadsheetzero.md) | formula evaluation |
 | [timp](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/code-injection/timp.md) | filter bypass |

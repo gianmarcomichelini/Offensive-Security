@@ -34,9 +34,9 @@ password-changer.challs.olicyber.it/change-password.php?token=YWRtaW4=
 
 The token value `YWRtaW4=` is simply the Base64 encoding of the string `admin`:
 
-```
+```sh
 echo -n "admin" | base64
-YWRtaW4=
+# output: YWRtaW4=
 ```
 
 The student correctly identified that the token parameter in the URL was Base64-encoded, decoded it to understand its structure, replaced the original username with `admin`, re-encoded it, and substituted it back into the URL directly in the browser's address bar. No Burp Suite was even necessary in this case, the exploit was entirely URL-level manipulation.
