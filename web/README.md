@@ -4,17 +4,13 @@ A collection of web security challenge writeups organized by vulnerability categ
 
 ## Challenges by Category
 
-### business-logic
+### application-logic
 
-| challenge | documentation |
-|---|---|
-| [swagshop](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/business-logic/swagshop.md) | workflow sequence circumvention |
-
-### cookie-manipulation
-
-| challenge | documentation |
-|---|---|
-| [click-me](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/cookie-manipulation/click-me.md) | cookie value tampering |
+| challenge | vulnerability | documentation |
+|---|---|---|
+| [click-me](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/application-logic/click-me.md) | cookie manipulation | cookie value tampering |
+| [password-changer](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/application-logic/password-changer.md) | token manipulation | base64 encoded token manipulation |
+| [swagshop](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/application-logic/swagshop.md) | business logic | workflow sequence circumvention |
 
 ### idor
 
@@ -37,12 +33,6 @@ A collection of web security challenge writeups organized by vulnerability categ
 |---|---|
 | [al-dente](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/privilege-escalation/al-dente.md) | roles validation processing failure |
 | [mission-control](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/privilege-escalation/mission-control.md) | broken access control |
-
-### token-manipulation
-
-| challenge | documentation |
-|---|---|
-| [password-changer](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/token-manipulation/password-changer.md) | base64 encoded token manipulation |
 
 ### session-management
 
