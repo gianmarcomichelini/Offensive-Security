@@ -57,7 +57,7 @@ With the knowledge that the backend relies on MySQL, we can exploit the built in
 
 Output:
 
-![[image_union_schema.png | 300]]
+<img src="_attachments/image_union_schema.png" width="300">
 
 
 To efficiently filter out irrelevant system data and focus only on the current application environment, we append a condition utilizing the `DATABASE()` function. We enumerate the relevant tables using this payload:
@@ -69,7 +69,7 @@ To efficiently filter out irrelevant system data and focus only on the current a
 ```
 
 Output:
-![[image_union_database.png | 300]]
+<img src="_attachments/image_union_database.png" width="300">
 
 After identifying the critical tables, we map their respective columns:
 
@@ -80,7 +80,7 @@ After identifying the critical tables, we map their respective columns:
 ```
 
 Output:
-![[image_union_columns.png | 300]]
+<img src="_attachments/image_union_columns.png" width="300">
 
 Once our enumeration reveals that the flag is stored within the `flag` column of a table named `real_data`, we construct the final extraction payload to retrieve our objective:
 

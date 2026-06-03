@@ -24,13 +24,13 @@ The process requires converting the plaintext secret into a format suitable for 
 <div class="two-col">
 <div>
 
-![[image_decoder.png]]
+![](_attachments/image_decoder.png)
 
 
 </div>	
 <div>
 
-![[image_jwt_extension_new_key.png]]
+![](_attachments/image_jwt_extension_new_key.png)
 
 
 </div>
@@ -52,7 +52,7 @@ To ensure the server accepts this modified payload, the practitioner uses the **
 </div>	
 <div>
 
-![[image_jwt_extension.png | 400]]
+<img src="_attachments/image_jwt_extension.png" width="400">
 
 </div>
 </div>

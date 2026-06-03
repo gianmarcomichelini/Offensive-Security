@@ -1,0 +1,12 @@
+services:
+  chall:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - '1337:1337'
+    restart: unless-stopped
+    privileged: true
+    init: true
+    environment:
+      - 'FLAG=offsec{test_flag}'

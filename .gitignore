@@ -209,3 +209,6 @@ __marimo__/
 .gdb_history
 
 copy_py_files.sh
+
+# Claude Code context file
+CLAUDE.md

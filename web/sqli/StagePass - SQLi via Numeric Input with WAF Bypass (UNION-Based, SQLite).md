@@ -1,7 +1,7 @@
 ## StagePass - SQLi via Numeric Input with WAF Bypass (UNION-Based, SQLite)
 
 
-> x Exam (26)
+> x Exam (30)
 
 
 StagePass is a concert ticketing platform that exposes a reservation lookup form accepting a numeric booking number, and the challenge description hints that security measures are in place to prevent abuse, inviting the question of whether those measures are truly sufficient to protect the VIP guest list hidden somewhere in the backend database.

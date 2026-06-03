@@ -1,6 +1,6 @@
 ## DepartmentWiki - Stacked SQL Injection
 
-> x Exam (24)
+> x Exam (28)
 
 The workflow executed during this laboratory session represents a classic example of second order data exfiltration, specifically tailored to bypass architectural constraints that neutralize direct output channels. The methodology progresses through a systematic sequence of identification, payload formulation, state mutation, and final retrieval.
 

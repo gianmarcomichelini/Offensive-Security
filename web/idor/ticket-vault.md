@@ -20,6 +20,6 @@ When you navigate the application and observe the network traffic using an inter
 }
 ```
 
-![[TicketVault - IDOR.png | 400]]
+<img src="_attachments/TicketVault%20-%20IDOR.png" width="400">
 
 > **Insecure Direct Object Reference (IDOR):** This vulnerability arises when an application provides direct access to database objects based on user-supplied input, where the failure to implement robust server-side access control checks allows an attacker to bypass authorization and access sensitive resources belonging to other users or higher privileged roles.

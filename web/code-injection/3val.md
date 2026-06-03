@@ -42,14 +42,14 @@ Once the `catch_warnings` class is successfully isolated and instantiated, the p
 
 Submitting this precise formula completely bypasses both the regular expression sanitization layer and the keyword blacklist, forcing the Python interpreter to read the targeted file from the underlying filesystem and render the hidden flag directly to the web interface.
 
-![[3v@l - Advanced Python Sandboxes and Code Execution Evasion.png | 300]]
+<img src="_attachments/3v%40l%20-%20Advanced%20Python%20Sandboxes%20and%20Code%20Execution%20Evasion.png" width="300">
 
-![[3v@l - Advanced Python Sandboxes and Code Execution Evasion_1.png | 300]]
+<img src="_attachments/3v%40l%20-%20Advanced%20Python%20Sandboxes%20and%20Code%20Execution%20Evasion_1.png" width="300">
 
 
-![[3v@l - Advanced Python Sandboxes and Code Execution Evasion_2.png | 400]]
+<img src="_attachments/3v%40l%20-%20Advanced%20Python%20Sandboxes%20and%20Code%20Execution%20Evasion_2.png" width="400">
 
-![[3v@l - Advanced Python Sandboxes and Code Execution Evasion_3.png | 400 ]]
+<img src="_attachments/3v%40l%20-%20Advanced%20Python%20Sandboxes%20and%20Code%20Execution%20Evasion_3.png" width="400">
 
 
 

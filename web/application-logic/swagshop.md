@@ -5,4 +5,4 @@ We now direct our attention to the laboratory exercise designated as SwagShop, w
 > **Business Logic Vulnerability:** This classification of security flaw occurs when an application correctly implements its technical operations but fundamentally fails to anticipate or restrict anomalous user behavior that violates the intended rules of the business process, which frequently allows attackers to manipulate legitimate workflows to achieve unintended and often damaging outcomes.
 
 
-![[Swag Shop -.png || 300]]
+<img src="_attachments/Swag%20Shop%20-.png" width="300">

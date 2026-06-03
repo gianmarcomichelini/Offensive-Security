@@ -1,7 +1,7 @@
 ## BookBrew - SQLi via Session Cookie (UNION-Based, SQLite)
 
 
-> x Exam (25)
+> x Exam (29)
 
 
 The BookBrew challenge presents itself as a cozy book review community where users can register, browse a catalog, and post reviews, with the vulnerability hiding not in the obvious login form but in how the session cookie is consumed after authentication. The registration flow appears entirely safe at first glance, and the login page offers no obvious injection surface, which makes the cookie the correct place to focus attention.

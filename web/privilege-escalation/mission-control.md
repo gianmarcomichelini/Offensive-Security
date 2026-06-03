@@ -19,4 +19,4 @@ To successfully bypass this restriction, you must intercept the outgoing request
 }
 ```
 
-![[Mission Control - Broken Access Control.png | 400]]
+<img src="_attachments/Mission%20Control%20-%20Broken%20Access%20Control.png" width="400">

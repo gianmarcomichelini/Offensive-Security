@@ -1,83 +1,111 @@
-# Web Exploitation CTF Writeups
+# Web Exploitation
 
-A collection of web security challenge writeups organized by vulnerability category, each documented with methodology, exploitation steps, and key takeaways.
+Challenges organized by vulnerability class. Each category folder contains individual writeups with methodology, payloads, and key takeaways.
+
+## Categories
+
+| folder | focus | challenges |
+|---|---|---|
+| [sqli/](sqli/) | SQL injection — authentication bypass, data extraction, blind and time-based techniques | 13 |
+| [xss/](xss/) | Cross-site scripting — reflected, stored, DOM, CSP bypass, cookie theft | 11 |
+| [idor/](idor/) | Insecure Direct Object Reference — predictable IDs, missing authorization checks | 5 |
+| [application-logic/](application-logic/) | Business logic and input validation flaws | 4 |
+| [session-management/](session-management/) | Cookie, JWT, 2FA, and session token vulnerabilities | 13 |
+| [privilege-escalation/](privilege-escalation/) | Broken access control, mass assignment, header spoofing | 2 |
+| [code-injection/](code-injection/) | OS command injection and server-side code evaluation | 11 |
 
 ## Challenges by Category
 
-### application-logic
+### sqli/
 
-| challenge | vulnerability | documentation |
+| challenge | injection type | technique |
 |---|---|---|
-| [click-me](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/application-logic/click-me.md) | cookie manipulation | cookie value tampering |
-| [password-changer](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/application-logic/password-changer.md) | token manipulation | base64 encoded token manipulation |
-| [swagshop](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/application-logic/swagshop.md) | business logic | workflow sequence circumvention |
-| [flags-shop](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/input-validation/flags-shop.md) | input validation | payload structure filter omissions |
+| [Basic SQLi - Authentication Bypass](<sqli/Basic SQLi - Authentication Bypass.md>) | login bypass | `' OR '1'='1` tautology |
+| [Logic SQLi](<sqli/Logic SQLi.md>) | login bypass | boolean logic manipulation |
+| [SQLiLite Logic Based Login Bypass](<sqli/SQLiLite Logic Based Login Bypass.md>) | login bypass | SQLite-specific logic subversion |
+| [Union-Based SQLi](<sqli/Union-Based SQLi.md>) | data extraction | UNION SELECT schema enumeration |
+| [Blind SQL Injection Automation](<sqli/Blind SQL Injection Automation and Oracle Construction.md>) | blind boolean | oracle construction + Python automation |
+| [Time Based SQL Injection Dynamics](<sqli/Time Based SQL Injection Dynamics.md>) | blind time-based | SLEEP/timing delays for bit extraction |
+| [ToDo - Cookie Bypass](<sqli/ToDo - Cookie Bypass.md>) | via cookie header | injection through session cookie |
+| [BookBrew - SQLi via Session Cookie](<sqli/BookBrew - SQLi via Session Cookie (UNION-Based, SQLite).md>) | UNION via cookie | UNION extraction through session cookie |
+| [AirlineLostFound](<sqli/AirlineLostFound - SQL Injection via UNION-Based Extraction, SQLite Enumeration, and Parenthesis Escaping.md>) | UNION + SQLite | parenthesis escaping + full schema dump |
+| [StagePass - WAF Bypass](<sqli/StagePass - SQLi via Numeric Input with WAF Bypass (UNION-Based, SQLite).md>) | numeric + WAF | mixed-case keywords + `/**/` space bypass |
+| [DepartmentWiki - Stacked Queries](<sqli/DepartmentWiki - Stacked SQL Injection.md>) | stacked queries | semicolon-separated second query |
+| [SQLi - Exploiting Registration Flows](<sqli/SQLi - Exploiting Registration Flows.md>) | registration form | second-order injection via signup |
+| [Sn4ck sh3nan1gans](<sqli/Sn4ck sh3nan1gans - SQLi with Encoded JSON Payloads.md>) | encoded JSON | injection hidden inside JSON-encoded parameters |
 
-### idor
+### xss/
 
-| challenge | documentation |
+| challenge | xss type | technique |
+|---|---|---|
+| [portswigger - Reflected XSS](<xss/portswigger - Reflected XSS into HTML context.md>) | reflected | basic HTML context injection |
+| [Segnalazione cinghiali - Attribute Context XSS](<xss/Segnalazione cinghiali cittadini - Attribute Context XSS.md>) | reflected | breaking out of HTML attribute context |
+| [ScratchPad - JS String Context](<xss/ScratchPad - Stored XSS via JavaScript String Context.md>) | stored | injecting into a JavaScript string literal |
+| [Guestbook - javascript: URI Bypass](<xss/Guestbook - XSS via javascript, URI Sanitizer Bypass.md>) | stored | `javascript:` URI sanitizer bypass |
+| [Curious George - Cookie Theft](<xss/Curious George - stored XSS and cookie theft.md>) | stored | stored XSS + proof-of-work + webhook exfiltration |
+| [Bibbopedia 2 - Action as Victim](<xss/Bibbopedia 2 - Stored XSS.md>) | stored | HttpOnly bypass via action-as-victim (CSRF via XSS) |
+| [RecipeBox - SSRF + XSS](<xss/RecipeBox - SSRF + Reflected XSS and Cookie Theft.md>) | reflected + SSRF | SSRF chained with reflected XSS for cookie theft |
+| [PigeonPost - postMessage Bypass](<xss/PigeonPost - postMessage Origin Bypass and javascript URI Cookie Theft.md>) | DOM | postMessage without origin validation |
+| [PicShare - SVG Upload XSS](<xss/PicShare - Stored XSS via SVG Upload and Missing X-Content-Type-Options.md>) | stored, file upload | SVG avatar upload + missing X-Content-Type-Options |
+| [Virtualbank - CSP 'self' Bypass](<xss/Virtualbank - CSP 'self' bypass.md>) | stored | exploiting overly permissive `'self'` CSP directive |
+| [Private Notes - CSP Nonce Predictability](<xss/Private Notes - CSP nonce predictability.md>) | stored | predicting or reusing nonce values to bypass CSP |
+
+### idor/
+
+| challenge | technique |
 |---|---|
-| [easynotes](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/idor/easynotes.md) | baseline sequential parameter reference access |
-| [labresults](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/idor/labresults.md) | identifier validation bypass |
-| [make-a-wish](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/idor/make-a-wish.md) | high privileged object modifications via APIs |
-| [ticketvault](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/idor/ticketvault.md) | structured reference extraction |
+| [labresults](<idor/labresults.md>) | Sequential patient record IDs in URL path (`/results/N`) |
+| [med-lab](<idor/med-lab.md>) | Same IDOR pattern on a clinical lab portal |
+| [easy-notes](<idor/easy-notes.md>) | Global sequential note IDs exposed in a REST API path (`/api/notes/N`) |
+| [ticket-vault](<idor/ticket-vault.md>) | Role-based ticket restriction bypassed via `/api/tickets/1` |
+| [make-a-wish](<idor/make-a-wish.md>) | PHP type juggling — `preg_match()` returns `FALSE` on array input, bypassing the check |
 
+### application-logic/
 
-### privilege-escalation
+| challenge | vulnerability | technique |
+|---|---|---|
+| [click-me](<application-logic/click-me.md>) | Client-side score tracking | Modify cookie `cookies=99999999` to fake the score |
+| [flags-shop](<application-logic/flags-shop.md>) | Hidden form field price | Intercept POST and change the `costo` parameter to an affordable value |
+| [password-changer](<application-logic/password-changer.md>) | Base64 token manipulation | Decode token → change username to `admin` → re-encode → inject in URL |
+| [swagshop](<application-logic/swagshop.md>) | Business logic (negative quantity) | Submit quantity=-1 to subtract a negative price, inflating wallet balance |
 
-| challenge | documentation |
-|---|---|
-| [al-dente](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/privilege-escalation/al-dente.md) | roles validation processing failure |
-| [mission-control](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/privilege-escalation/mission-control.md) | broken access control |
+### session-management/
 
-### session-management
+| challenge | vulnerability | technique |
+|---|---|---|
+| [power-cookie](<session-management/power-cookie.md>) | Client-side authorization cookie | Flip `admin=0` to `admin=1` in DevTools or Burp |
+| [cookie-monster-army](<session-management/cookie-monster-army.md>) | Base64 cookie forgery | Decode → replace username with `admin` → re-encode |
+| [a-too-small-reminder](<session-management/a-too-small-reminder.md>) | Predictable sequential session IDs | Burp Intruder enumerates 1..10000; 200 response identifies admin session |
+| [flagmail](<session-management/flagmail.md>) | Predictable token formula (timestamp + user_id) | Brute-force timestamp window ending in `001` to find admin's token |
+| [bibvault-1](<session-management/bibvault-1.md>) | JWT signature not verified | Server uses `jwt.decode()` not `jwt.verify()` — tamper payload freely |
+| [jwt-bypass-flawed-signature](<session-management/jwt-bypass-flawed-signature.md>) | JWT `alg:none` attack | Set `alg=none`, strip signature, keep trailing dot; server skips verification |
+| [jwt-bypass-weak-keys](<session-management/jwt-bypass-weak-keys.md>) | JWT HMAC weak key | `hashcat -m 16500` cracks `secret1`; re-sign with that key as admin |
+| [jwt-bypass-jwk](<session-management/jwt-bypass-jwk.md>) | JWT embedded JWK | Inject rogue RSA public key in `jwk` header; server validates attacker's signature |
+| [jwt-bypass-jku](<session-management/jwt-bypass-jku.md>) | JWT `jku` header injection | Point `jku` to attacker-controlled JWKS endpoint; server fetches and trusts it |
+| [jwt-bypass-kid](<session-management/jwt-bypass-kid.md>) | JWT `kid` path traversal | `kid=../../../dev/null` → server loads empty key → HMAC signed with null byte |
+| [keyvault](<session-management/keyvault.md>) | JKU injection via webhook | `jku` points to webhook.site hosting attacker JWKS; real-time telemetry confirms fetch |
+| [neonarcade](<session-management/neonarcade.md>) | Mass assignment + cookie | Inject `"role":"admin"` in profile PUT; server re-issues a legitimately signed cookie |
+| [two-factor-flaws](<session-management/two-factor-flaws.md>) | 2FA bypass via forced browsing | Session issued after password check; navigate directly to `/my-account`, skipping 2FA |
 
-| challenge | documentation |
-|---|---|
-| [a-too-small-reminder](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/session-management/a-too-small-reminder.md) | session ID brute forcing |
-| [bibvault-1](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/session-management/bibvault-1.md) | JWT signature omission |
-| [cookie-monster-army](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/session-management/cookie-monster-army.md) | predictability verification analysis |
-| [flagmail](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/session-management/flagmail.md) | IDOR combined with predictable tokens |
-| [jwt-bypass-flawed-signature](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/session-management/jwt-bypass-flawed-signature.md) | improper verification implementation |
-| [jwt-bypass-weak-keys](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/session-management/jwt-bypass-weak-keys.md) | symmetric signature brute forcing |
-| [jwt-bypass-jku](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/session-management/jwt-bypass-jku.md) | JKU header injection |
-| [jwt-bypass-jwk](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/session-management/jwt-bypass-jwk.md) | JWK header injection |
-| [jwt-bypass-kid](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/session-management/jwt-bypass-kid.md) | KID header path traversal |
-| [keyvault](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/session-management/keyvault.md) | JKU injection |
-| [neonarcade](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/session-management/neonarcade.md) | privilege escalation with mass assignment |
-| [power-cookie](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/session-management/power-cookie.md) | authorization manipulation |
-| [two-factor-flaws](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/session-management/two-factor-flaws.md) | architecture and logic flaws |
+### privilege-escalation/
 
-### sqli
+| challenge | vulnerability | technique |
+|---|---|---|
+| [al-dente](<privilege-escalation/al-dente.md>) | Mass assignment | Inject `"role": "head_chef"` in profile PUT; server binds it to the user object |
+| [mission-control](<privilege-escalation/mission-control.md>) | Broken access control via client header | Spoof `X-Clearance-Level: commander`; server trusts the client-supplied value |
 
-| challenge | documentation |
-|---|---|
-| [airlinelostfound](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/sqli/airlinelostfound.md) | extraction and parenthesis escaping |
-| [basic-sqli](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/sqli/basic-sqli.md) | authentication bypass structures |
-| [blind-sqli-automation](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/sqli/blind-sqli-automation.md) | boolean oracle construction |
-| [bookbrew](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/sqli/bookbrew.md) | injection via session cookie |
-| [departmentwiki](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/sqli/departmentwiki.md) | stacked queries |
-| [logic-sqli](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/sqli/logic-sqli.md) | logic evaluation |
-| [sqli-registration](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/sqli/sqli-registration.md) | exploiting registration flows |
-| [sqlilite-login-bypass](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/sqli/sqlilite-login-bypass.md) | SQLite authentication subversion |
-| [sn4ck-sh3nan1gans](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/sqli/sn4ck-sh3nan1gans.md) | encoded JSON payloads |
-| [stagepass](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/sqli/stagepass.md) | numeric input with WAF bypass |
-| [time-based-sqli](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/sqli/time-based-sqli.md) | time delay dynamics |
-| [todo-cookie-bypass](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/sqli/todo-cookie-bypass.md) | cookie bypass vectors |
-| [union-based-sqli](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/sqli/union-based-sqli.md) | explicit UNION constructs |
+### code-injection/
 
-### code-injection
-
-| challenge | documentation |
-|---|---|
-| [3val](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/code-injection/3val.md) | advanced Python sandboxes |
-| [autograder](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/code-injection/autograder.md) | Python sandbox evasion and hierarchy traversal |
-| [calcolatrice](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/code-injection/calcolatrice.md) | PHP evaluation |
-| [gitpeek](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/code-injection/gitpeek.md) | vulnerable variable expansion |
-| [ping1](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/code-injection/ping1.md) | unrestricted command execution |
-| [ping2](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/code-injection/ping2.md) | advanced filter evasion |
-| [blind-injection](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/code-injection/blind-injection.md) | blind OS command injection |
-| [qrdrop](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/code-injection/qrdrop.md) | standard command injection |
-| [spreadsheetzero](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/code-injection/spreadsheetzero.md) | formula evaluation |
-| [timp](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/code-injection/timp.md) | filter bypass |
-| [virus-vault](https://github.com/gianmarcomichelini/Offensive-Security/tree/main/web/code-injection/virus-vault.md) | blind CMD injection |
+| challenge | injection type | technique |
+|---|---|---|
+| [ping1](<code-injection/ping1.md>) | OS command injection | Basic unrestricted command chaining (`; cat /flag`) |
+| [ping2](<code-injection/ping2.md>) | OS command injection + filter bypass | Advanced evasion of character and keyword blacklists |
+| [blind-injection](<code-injection/blind-injection.md>) | Blind OS command injection | Output redirection to a web-accessible file for exfiltration |
+| [qrdrop](<code-injection/qrdrop.md>) | Command injection via QR code | Malicious command embedded in QR code content |
+| [calcolatrice](<code-injection/calcolatrice.md>) | PHP `eval()` injection | Arbitrary PHP code execution via unsanitized eval |
+| [spreadsheetzero](<code-injection/spreadsheetzero.md>) | PHP `eval()` injection | Formula evaluation context exploited as code execution |
+| [3val](<code-injection/3val.md>) | Python sandbox escape | MRO traversal (`__subclasses__`) + string fragmentation to bypass static blacklist |
+| [autograder](<code-injection/autograder.md>) | Python sandbox escape | `_ModuleLock.__init__.__globals__` + fragmented `__builtins__` to read `/flag.txt` |
+| [gitpeek](<code-injection/gitpeek.md>) | Command injection via variable expansion | `$FLAG` shell variable expansion bypasses separator blacklist |
+| [timp](<code-injection/timp.md>) | Command injection + filter bypass | `$(cat /flag.txt)` substitution or `${IFS}` to bypass space filter |
+| [virus-vault](<code-injection/virus-vault.md>) | Blind time-based command injection | Filename parameter injected; time-based exfiltration of FLAG env variable char-by-char |

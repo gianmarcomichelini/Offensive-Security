@@ -7,7 +7,7 @@ We now pivot our focus from the operating system shell to a strictly more powerf
 The application presents a simplified web calculator designed to accept complex mathematical expressions, such as `5+2*pow(3,6)-126`, submitted through a POST request parameter logically named `expression`. To process this mathematical input dynamically, the backend application relies on the PHP `eval()` function, which evaluates a given string as raw PHP code. This architectural choice transforms the vulnerability from command injection into pure code injection.
 
 How to discover it (let it crash):
-![[ff.png]]
+![](_attachments/ff.png)
 
 #### The Mechanics and Severity of the `eval()` Vulnerability
 
@@ -19,13 +19,13 @@ However, the laboratory guidelines provide a critical piece of intelligence rega
 
 
 
-![[Calcolatrice - The Transition to Code Injection via PHP Evaluation_2.png | 500 ]]
+<img src="_attachments/Calcolatrice%20-%20The%20Transition%20to%20Code%20Injection%20via%20PHP%20Evaluation_2.png" width="500">
 
 ```php
 show_source('index.php'); // 
 ```
 
-![[Calcolatrice - The Transition to Code Injection via PHP Evaluation_3.png | 500]]
+<img src="_attachments/Calcolatrice%20-%20The%20Transition%20to%20Code%20Injection%20via%20PHP%20Evaluation_3.png" width="500">
 
 ```php
 phpinfo(); // 
@@ -33,7 +33,7 @@ phpinfo(); //
 
 And then search for the flag in the env variables:
 
-![[Calcolatrice - The Transition to Code Injection via PHP Evaluation_4.png | 500 ]]
+<img src="_attachments/Calcolatrice%20-%20The%20Transition%20to%20Code%20Injection%20via%20PHP%20Evaluation_4.png" width="500">
 
 
 

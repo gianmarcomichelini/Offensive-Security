@@ -46,14 +46,14 @@ Assuming you have generated a unique endpoint URL using a service like Webhook.s
 Upon submitting this crafted payload through the vulnerable input field, the server will execute the initial network ping, process the newline character, and subsequently execute our unauthorized network request. You will observe a new incoming HTTP POST request on your webhook listener dashboard, and the body of this request will contain the complete PHP source code of the application. By reviewing this exfiltrated code locally in your preferred markdown or text editor, you can analyze the hidden application logic, locate the exact variable or hardcoded string containing the flag, and successfully fulfill the objectives of the laboratory exercise.
 
 
-![[Command Injection - Filter Bypass_2.png | 500]]
+<img src="_attachments/Command%20Injection%20-%20Filter%20Bypass_2.png" width="500">
 
-![[Command Injection - Filter Bypass_4.png | 500]]
+<img src="_attachments/Command%20Injection%20-%20Filter%20Bypass_4.png" width="500">
 
-![[Command Injection - Filter Bypass.png | 500]]
+<img src="_attachments/Command%20Injection%20-%20Filter%20Bypass.png" width="500">
 
-![[Command Injection - Filter Bypass_5.png | 500]]
+<img src="_attachments/Command%20Injection%20-%20Filter%20Bypass_5.png" width="500">
 
-![[Command Injection - Filter Bypass_1.png | 500]]
+<img src="_attachments/Command%20Injection%20-%20Filter%20Bypass_1.png" width="500">
 
-![[Command Injection - Filter Bypass_3.png | 500]]
+<img src="_attachments/Command%20Injection%20-%20Filter%20Bypass_3.png" width="500">

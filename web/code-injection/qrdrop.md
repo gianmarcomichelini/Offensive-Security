@@ -16,6 +16,6 @@ To construct a successful payload, the initial single quote must be prematurely 
 ```
 
 
-![[QRDrop - Command Injection.png]]
+![](_attachments/QRDrop%20-%20Command%20Injection.png)
 
 

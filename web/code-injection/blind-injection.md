@@ -11,12 +11,12 @@ The exploitation phase begins by identifying the `email` parameter within the in
 ||whoami>/var/www/images/output.txt||
 ```
 
-![[PortSwigger - Blind OS command injection with output redirection.png | 500]]
+<img src="_attachments/PortSwigger%20-%20Blind%20OS%20command%20injection%20with%20output%20redirection.png" width="500">
 
 The mechanics of this payload are highly precise. The initial double pipe constitutes a shell short-circuit OR operator. By providing an invalid email format, the attacker guarantees the failure of the initial mail command, which forces the shell to execute the subsequent `whoami` command. The output of `whoami` is then redirected via the greater-than operator into a text file within the writable image directory. Finally, the trailing double pipe absorbs any residual arguments from the original command line, ensuring they do not cause syntax errors that would halt execution.
 
 During this exploitation, it is imperative to retain the original CSRF token and session cookie within the request, as omitting them will trigger an HTTP error or initiate a fresh session. Upon submission, the server returns an empty JSON object, offering no direct confirmation, which aligns perfectly with the expected behavior for a blind vulnerability. The exfiltrated data is subsequently retrieved by issuing a direct GET request to the image endpoint for the newly created text file.
 
-![[PortSwigger - Blind OS command injection with output redirection_1.png | 400]]
+<img src="_attachments/PortSwigger%20-%20Blind%20OS%20command%20injection%20with%20output%20redirection_1.png" width="400">
 
 > Blind command injection requires the attacker to leverage observable side effects to confirm execution and extract data. When writable directories are unavailable, professionals rely on out-of-band channels to trigger external network requests, or they utilize time-based payloads to infer success through measurable application delays.

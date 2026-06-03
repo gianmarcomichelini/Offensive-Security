@@ -69,13 +69,13 @@ Authorization: Bearer 1776179049001
 <div class="two-col">
 <div>
 
-![[burp_suite_intruder_setup.png]]
+![](_attachments/burp_suite_intruder_setup.png)
 
 
 </div>	
 <div>
 
-![[image_burp_intruder.png]]
+![](_attachments/image_burp_intruder.png)
 
 
 </div>
