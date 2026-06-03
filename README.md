@@ -1,6 +1,6 @@
 # Offensive Security
 
-![Status](https://img.shields.io/badge/status-in%20progress-blue)
+![Status](https://img.shields.io/badge/status-done-green)
 
 Master of Science in Cybersecurity Engineering — Politecnico di Torino
 
