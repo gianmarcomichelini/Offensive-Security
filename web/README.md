@@ -20,35 +20,35 @@ Challenges organized by vulnerability class. Each category folder contains indiv
 
 | challenge | injection type | technique |
 |---|---|---|
-| [Basic SQLi - Authentication Bypass](<sqli/Basic SQLi - Authentication Bypass.md>) | login bypass | `' OR '1'='1` tautology |
-| [Logic SQLi](<sqli/Logic SQLi.md>) | login bypass | boolean logic manipulation |
-| [SQLiLite Logic Based Login Bypass](<sqli/SQLiLite Logic Based Login Bypass.md>) | login bypass | SQLite-specific logic subversion |
-| [Union-Based SQLi](<sqli/Union-Based SQLi.md>) | data extraction | UNION SELECT schema enumeration |
-| [Blind SQL Injection Automation](<sqli/Blind SQL Injection Automation and Oracle Construction.md>) | blind boolean | oracle construction + Python automation |
-| [Time Based SQL Injection Dynamics](<sqli/Time Based SQL Injection Dynamics.md>) | blind time-based | SLEEP/timing delays for bit extraction |
-| [ToDo - Cookie Bypass](<sqli/ToDo - Cookie Bypass.md>) | via cookie header | injection through session cookie |
-| [BookBrew - SQLi via Session Cookie](<sqli/BookBrew - SQLi via Session Cookie (UNION-Based, SQLite).md>) | UNION via cookie | UNION extraction through session cookie |
-| [AirlineLostFound](<sqli/AirlineLostFound - SQL Injection via UNION-Based Extraction, SQLite Enumeration, and Parenthesis Escaping.md>) | UNION + SQLite | parenthesis escaping + full schema dump |
-| [StagePass - WAF Bypass](<sqli/StagePass - SQLi via Numeric Input with WAF Bypass (UNION-Based, SQLite).md>) | numeric + WAF | mixed-case keywords + `/**/` space bypass |
-| [DepartmentWiki - Stacked Queries](<sqli/DepartmentWiki - Stacked SQL Injection.md>) | stacked queries | semicolon-separated second query |
-| [SQLi - Exploiting Registration Flows](<sqli/SQLi - Exploiting Registration Flows.md>) | registration form | second-order injection via signup |
-| [Sn4ck sh3nan1gans](<sqli/Sn4ck sh3nan1gans - SQLi with Encoded JSON Payloads.md>) | encoded JSON | injection hidden inside JSON-encoded parameters |
+| [Basic SQLi](sqli/basic-sqli.md) | login bypass | `' OR '1'='1` tautology |
+| [Logic SQLi](sqli/logic-sqli.md) | login bypass | boolean logic manipulation |
+| [SQLiLite](sqli/sqlilite.md) | login bypass | SQLite-specific logic subversion |
+| [Union-Based SQLi](sqli/union-based-sqli.md) | data extraction | UNION SELECT schema enumeration |
+| [Blind SQL Injection Automation](sqli/blind-sqli.md) | blind boolean | oracle construction + Python automation |
+| [Time Based SQL Injection Dynamics](sqli/time-based-sqli.md) | blind time-based | SLEEP/timing delays for bit extraction |
+| [ToDo](sqli/todo.md) | via cookie header | injection through session cookie |
+| [BookBrew](sqli/bookbrew.md) | UNION via cookie | UNION extraction through session cookie |
+| [AirlineLostFound](sqli/airline-lost-found.md) | UNION + SQLite | parenthesis escaping + full schema dump |
+| [StagePass](sqli/stagepass.md) | numeric + WAF | mixed-case keywords + `/**/` space bypass |
+| [DepartmentWiki](sqli/department-wiki.md) | stacked queries | semicolon-separated second query |
+| [Admin's Secret](sqli/admins-secret.md) | registration form | second-order injection via signup |
+| [Sn4ck sh3nan1gans](sqli/sn4ck-sh3nan1gans.md) | encoded JSON | injection hidden inside JSON-encoded parameters |
 
 ### xss/
 
 | challenge | xss type | technique |
 |---|---|---|
-| [portswigger - Reflected XSS](<xss/portswigger - Reflected XSS into HTML context.md>) | reflected | basic HTML context injection |
-| [Segnalazione cinghiali - Attribute Context XSS](<xss/Segnalazione cinghiali cittadini - Attribute Context XSS.md>) | reflected | breaking out of HTML attribute context |
-| [ScratchPad - JS String Context](<xss/ScratchPad - Stored XSS via JavaScript String Context.md>) | stored | injecting into a JavaScript string literal |
-| [Guestbook - javascript: URI Bypass](<xss/Guestbook - XSS via javascript, URI Sanitizer Bypass.md>) | stored | `javascript:` URI sanitizer bypass |
-| [Curious George - Cookie Theft](<xss/Curious George - stored XSS and cookie theft.md>) | stored | stored XSS + proof-of-work + webhook exfiltration |
-| [Bibbopedia 2 - Action as Victim](<xss/Bibbopedia 2 - Stored XSS.md>) | stored | HttpOnly bypass via action-as-victim (CSRF via XSS) |
-| [RecipeBox - SSRF + XSS](<xss/RecipeBox - SSRF + Reflected XSS and Cookie Theft.md>) | reflected + SSRF | SSRF chained with reflected XSS for cookie theft |
-| [PigeonPost - postMessage Bypass](<xss/PigeonPost - postMessage Origin Bypass and javascript URI Cookie Theft.md>) | DOM | postMessage without origin validation |
-| [PicShare - SVG Upload XSS](<xss/PicShare - Stored XSS via SVG Upload and Missing X-Content-Type-Options.md>) | stored, file upload | SVG avatar upload + missing X-Content-Type-Options |
-| [Virtualbank - CSP 'self' Bypass](<xss/Virtualbank - CSP 'self' bypass.md>) | stored | exploiting overly permissive `'self'` CSP directive |
-| [Private Notes - CSP Nonce Predictability](<xss/Private Notes - CSP nonce predictability.md>) | stored | predicting or reusing nonce values to bypass CSP |
+| [portswigger](xss/portswigger.md) | reflected | basic HTML context injection |
+| [Segnalazione cinghiali cittadini](xss/segnalazione-cinghiali-cittadini.md) | reflected | breaking out of HTML attribute context |
+| [ScratchPad](xss/scratchpad.md) | stored | injecting into a JavaScript string literal |
+| [Guestbook](xss/guestbook.md) | stored | `javascript:` URI sanitizer bypass |
+| [Curious George](xss/curious-george.md) | stored | stored XSS + proof-of-work + webhook exfiltration |
+| [Bibbopedia 2](xss/bibbopedia-2.md) | stored | HttpOnly bypass via action-as-victim (CSRF via XSS) |
+| [RecipeBox](xss/recipebox.md) | reflected + SSRF | SSRF chained with reflected XSS for cookie theft |
+| [PigeonPost](xss/pigeonpost.md) | DOM | postMessage without origin validation |
+| [PicShare](xss/picshare.md) | stored, file upload | SVG avatar upload + missing X-Content-Type-Options |
+| [Virtualbank](xss/virtualbank.md) | stored | exploiting overly permissive `'self'` CSP directive |
+| [Private Notes](xss/private-notes.md) | stored | predicting or reusing nonce values to bypass CSP |
 
 ### idor/
 

@@ -6,19 +6,19 @@ SQL injection challenges covering the full spectrum from basic authentication by
 
 | challenge | type | key technique |
 |---|---|---|
-| [Basic SQLi - Authentication Bypass](<Basic SQLi - Authentication Bypass.md>) | Login bypass | `' OR '1'='1` tautology in username field bypasses credential check |
-| [Logic SQLi](<Logic SQLi.md>) | Login bypass | Boolean logic manipulation in the WHERE clause |
-| [SQLiLite Logic Based Login Bypass](<SQLiLite Logic Based Login Bypass.md>) | Login bypass | SQLite-specific syntax for authentication subversion |
-| [Union-Based SQLi](<Union-Based SQLi.md>) | Data extraction | UNION SELECT with column count matching; `information_schema` enumeration |
-| [Blind SQL Injection Automation](<Blind SQL Injection Automation and Oracle Construction.md>) | Blind boolean | Boolean oracle (true/false response diff) + Python script for automated extraction |
-| [Time Based SQL Injection Dynamics](<Time Based SQL Injection Dynamics.md>) | Blind time-based | `SLEEP()`/`WAITFOR` delays as the oracle; bit-by-bit extraction |
-| [ToDo - Cookie Bypass](<ToDo - Cookie Bypass.md>) | Via cookie header | SQL injection injected through a session or auth cookie rather than a form field |
-| [BookBrew - SQLi via Session Cookie](<BookBrew - SQLi via Session Cookie (UNION-Based, SQLite).md>) | UNION via cookie | UNION-based data extraction through the session cookie on a SQLite backend |
-| [AirlineLostFound](<AirlineLostFound - SQL Injection via UNION-Based Extraction, SQLite Enumeration, and Parenthesis Escaping.md>) | UNION + SQLite | Parenthesis escaping in the injection context; full SQLite `sqlite_master` dump |
-| [StagePass - WAF Bypass](<StagePass - SQLi via Numeric Input with WAF Bypass (UNION-Based, SQLite).md>) | Numeric + WAF | No quotes needed (numeric context); `/**/` replaces spaces; mixed-case keywords defeat keyword filter |
-| [DepartmentWiki - Stacked Queries](<DepartmentWiki - Stacked SQL Injection.md>) | Stacked queries | Semicolon terminates the original query; second arbitrary query appended |
-| [SQLi - Exploiting Registration Flows](<SQLi - Exploiting Registration Flows.md>) | Registration form | Injection in signup fields; data persisted and evaluated later (second-order) |
-| [Sn4ck sh3nan1gans](<Sn4ck sh3nan1gans - SQLi with Encoded JSON Payloads.md>) | Encoded JSON | SQL payload embedded inside a JSON-encoded parameter; backend decodes before querying |
+| [Basic SQLi](basic-sqli.md) | Login bypass | `' OR '1'='1` tautology in username field bypasses credential check |
+| [Logic SQLi](logic-sqli.md) | Login bypass | Boolean logic manipulation in the WHERE clause |
+| [SQLiLite](sqlilite.md) | Login bypass | SQLite-specific syntax for authentication subversion |
+| [Union-Based SQLi](union-based-sqli.md) | Data extraction | UNION SELECT with column count matching; `information_schema` enumeration |
+| [Blind SQL Injection Automation](blind-sqli.md) | Blind boolean | Boolean oracle (true/false response diff) + Python script for automated extraction |
+| [Time Based SQL Injection Dynamics](time-based-sqli.md) | Blind time-based | `SLEEP()`/`WAITFOR` delays as the oracle; bit-by-bit extraction |
+| [ToDo](todo.md) | Via cookie header | SQL injection injected through a session or auth cookie rather than a form field |
+| [BookBrew](bookbrew.md) | UNION via cookie | UNION-based data extraction through the session cookie on a SQLite backend |
+| [AirlineLostFound](airline-lost-found.md) | UNION + SQLite | Parenthesis escaping in the injection context; full SQLite `sqlite_master` dump |
+| [StagePass](stagepass.md) | Numeric + WAF | No quotes needed (numeric context); `/**/` replaces spaces; mixed-case keywords defeat keyword filter |
+| [DepartmentWiki](department-wiki.md) | Stacked queries | Semicolon terminates the original query; second arbitrary query appended |
+| [Admin's Secret](admins-secret.md) | Registration form | Injection in signup fields; data persisted and evaluated later (second-order) |
+| [Sn4ck sh3nan1gans](sn4ck-sh3nan1gans.md) | Encoded JSON | SQL payload embedded inside a JSON-encoded parameter; backend decodes before querying |
 
 ## Injection Context Reference
 

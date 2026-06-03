@@ -78,10 +78,10 @@ Challenges organized by mitigation layer and technique. Each category builds on 
 
 ### heap/
 
-> Work in progress — challenges under active development.
-
-| challenge | technique |
-|---|---|
-| account-vault | heap exploitation |
-| recycler | heap exploitation |
-| notebook | heap exploitation |
+| challenge | technique | key concept |
+|---|---|---|
+| [account-vault](heap/account-vault/) | UAF → tcache chunk reuse | free User, allocate same-size Data → tcache returns freed chunk; write win to action field |
+| [inventory_slot](heap/inventory_slot/) | heap overflow → function pointer overwrite | read(note, 0xC0) into 64-byte note; adjacent Slot->display at offset +80 |
+| [recycler](heap/recycler/) | tcache double-free + UAF | clear tcache key via UAF write → double free; overlapping allocs expose shared chunk |
+| [notebook](heap/notebook/) | tcache poisoning → arbitrary write | poison freed HEAD fd → &global_handler; next alloc writes win there |
+| [whisper](heap/whisper/) | unsorted bin libc leak + tcache poisoning | free large chunk → UAF leaks libc fd; tcache poison → __free_hook = system; free("/bin/sh") |
